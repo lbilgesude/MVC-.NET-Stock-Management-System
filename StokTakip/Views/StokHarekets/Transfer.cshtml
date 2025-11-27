@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Stok Transferi";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        @ViewData["Title"]
+                    </h4>
+                </div>
+                <div class="card-body">
+                        <form asp-action="Transfer" method="post" class="modern-form">
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    Ürün Bilgileri
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="urunAdi" class="form-label">
+                                                <i class="fas fa-box"></i>
+                                                Ürün Adı
+                                            </label>
+                                            <input type="text" id="urunAdi" name="urunAdi" class="form-control" placeholder="Ürün adını girin" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="urunMarka" class="form-label">
+                                                <i class="fas fa-trademark"></i>
+                                                Ürün Markası
+                                            </label>
+                                            <input type="text" id="urunMarka" name="urunMarka" class="form-control" placeholder="Ürün markasını girin" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-warehouse"></i>
+                                    Transfer Bilgileri
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="KaynakDepoId" class="form-label">
+                                                <i class="fas fa-arrow-left"></i>
+                                                Kaynak Depo (Nereden?)
+                                            </label>
+                                            <select id="KaynakDepoId" name="KaynakDepoId" class="form-control" asp-items="ViewBag.KaynakDepoId">
+                                                <option value="">-- Kaynak Depo Seçiniz --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="HedefDepoId" class="form-label">
+                                                <i class="fas fa-arrow-right"></i>
+                                                Hedef Depo (Nereye?)
+                                            </label>
+                                            <select id="HedefDepoId" name="HedefDepoId" class="form-control" asp-items="ViewBag.HedefDepoId">
+                                                <option value="">-- Hedef Depo Seçiniz --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-user"></i>
+                                    Sorumlu ve Miktar
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="SorumluId" class="form-label">
+                                                <i class="fas fa-user-tie"></i>
+                                                Sorumlu
+                                            </label>
+                                            <select id="SorumluId" name="SorumluId" class="form-control" asp-items="ViewBag.SorumluId">
+                                                <option value="">-- Sorumlu Seçiniz --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="HareketMiktar" class="form-label">
+                                                <i class="fas fa-calculator"></i>
+                                                Miktar
+                                            </label>
+                                            <input id="HareketMiktar" name="HareketMiktar" class="form-control" type="number" step="any" placeholder="Miktar girin" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-comment"></i>
+                                    Açıklama
+                                </h4>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="Aciklama" class="form-label">
+                                                <i class="fas fa-comment-dots"></i>
+                                                Açıklama
+                                            </label>
+                                            <textarea id="Aciklama" name="Aciklama" class="form-control" rows="3" placeholder="Transfer açıklaması girin (opsiyonel)"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-warning btn-lg">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    Transferi Gerçekleştir
+                                </button>
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-outline btn-lg">
+                                    <i class="fas fa-times"></i>
+                                    İptal
+                                </a>
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

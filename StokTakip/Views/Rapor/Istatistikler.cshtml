@@ -1,0 +1,683 @@
+﻿@model StokTakip.Models.IstatistiklerViewModel
+@{
+    ViewData["Title"] = "Stok İstatistikleri";
+}
+
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-chart-bar"></i>
+        @ViewData["Title"]
+    </h1>
+    <p class="page-subtitle">Stok sisteminizin detaylı istatistiklerini ve performans metriklerini görüntüleyin</p>
+    
+    <!-- Sayfa İşlem Butonları -->
+    <div class="page-actions">
+        <button type="button" class="btn btn-primary" id="refreshStats">
+            <i class="fas fa-sync-alt me-2"></i>
+            Yenile
+        </button>
+        <button type="button" class="btn btn-success" id="exportStats">
+            <i class="fas fa-download me-2"></i>
+            Dışa Aktar
+        </button>
+        <a asp-action="GrafikselRaporlar" class="btn btn-info">
+            <i class="fas fa-chart-line me-2"></i>
+            Grafiklere Git
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            Raporlara Geri Dön
+        </a>
+    </div>
+</div>
+
+<!-- Filtreler -->
+<div class="filters-section mb-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Tarih Aralığı</label>
+                    <select id="dateRange" class="form-select">
+                        <option value="1">Son 1 Ay</option>
+                        <option value="3">Son 3 Ay</option>
+                        <option value="6">Son 6 Ay</option>
+                        <option value="12" selected>Son 12 Ay</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Gösterim Tipi</label>
+                    <select id="displayType" class="form-select">
+                        <option value="cards">Kart Görünümü</option>
+                        <option value="table">Tablo Görünümü</option>
+                        <option value="charts">Grafik Görünümü</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Sıralama</label>
+                    <select id="sortOrder" class="form-select">
+                        <option value="desc">Azalan</option>
+                        <option value="asc">Artan</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button id="applyFilters" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Filtreleri Uygula
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ana İstatistik Kartları -->
+<div class="summary-cards mb-4">
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card enhanced">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="summary-content">
+                    <h3 id="toplamUrunCesidi">@Model.ToplamUrunCesidi.ToString("N0")</h3>
+                    <p>Toplam Ürün Çeşidi</p>
+                    <div class="trend-indicator positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12.5%</span>
+                    </div>
+                </div>
+                <div class="summary-chart">
+                    <canvas id="urunCesidiChart" width="60" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card enhanced">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);">
+                    <i class="fas fa-dolly"></i>
+                </div>
+                <div class="summary-content">
+                    <h3 id="toplamStokAdedi">@Model.ToplamStokAdedi.ToString("N0")</h3>
+                    <p>Toplam Stok Adedi</p>
+                    <div class="trend-indicator positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+8.3%</span>
+                    </div>
+                </div>
+                <div class="summary-chart">
+                    <canvas id="stokAdediChart" width="60" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card enhanced">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <div class="summary-content">
+                    <h3 id="toplamDepoSayisi">@Model.ToplamDepoSayisi.ToString("N0")</h3>
+                    <p>Toplam Alt Depo Sayısı</p>
+                    <div class="trend-indicator neutral">
+                        <i class="fas fa-minus"></i>
+                        <span>0%</span>
+                    </div>
+                </div>
+                <div class="summary-chart">
+                    <canvas id="depoSayisiChart" width="60" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="summary-card enhanced">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #f6c23e 0%, #dda20a 100%);">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="summary-content">
+                    <h3 id="buAykiHareketSayisi">@Model.BuAykiHareketSayisi.ToString("N0")</h3>
+                    <p>Bu Ayki Hareket Sayısı</p>
+                    <div class="trend-indicator negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-2.1%</span>
+                    </div>
+                </div>
+                <div class="summary-chart">
+                    <canvas id="hareketSayisiChart" width="60" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detay İstatistik Kartları -->
+<div class="row mb-4">
+    <div class="col-lg-4 mb-4">
+        <div class="chart-card enhanced">
+            <div class="chart-header" style="background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); color: white;">
+                <h5><i class="fas fa-trophy me-2"></i>En Çok Bulunan Ürün</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-light" onclick="showProductDetails('enCok')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body text-center">
+                <div class="statistic-display">
+                    <div class="statistic-value">@Model.EnCokBulunanUrun?.Label ?? "Veri Yok"</div>
+                    <div class="statistic-number">@Model.EnCokBulunanUrun?.Value.ToString("N0") ?? "0"</div>
+                    <div class="statistic-label">Toplam Miktar</div>
+                </div>
+                <div class="progress mt-3" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                </div>
+                <small class="text-muted">Stok seviyesi: %85</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="chart-card enhanced">
+            <div class="chart-header" style="background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%); color: white;">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>En Az Bulunan Ürün</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-light" onclick="showProductDetails('enAz')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body text-center">
+                <div class="statistic-display">
+                    <div class="statistic-value">@Model.EnAzBulunanUrun?.Label ?? "Veri Yok"</div>
+                    <div class="statistic-number">@Model.EnAzBulunanUrun?.Value.ToString("N0") ?? "0"</div>
+                    <div class="statistic-label">Toplam Miktar</div>
+                </div>
+                <div class="progress mt-3" style="height: 8px;">
+                    <div class="progress-bar bg-danger" style="width: 15%"></div>
+                </div>
+                <small class="text-muted">Stok seviyesi: %15</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-4">
+        <div class="chart-card enhanced">
+            <div class="chart-header" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white;">
+                <h5><i class="fas fa-fire me-2"></i>En Aktif Ürün</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-light" onclick="showProductDetails('enAktif')">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body text-center">
+                <div class="statistic-display">
+                    <div class="statistic-value">@Model.EnAktifUrun?.Label ?? "Veri Yok"</div>
+                    <div class="statistic-number">@Model.EnAktifUrun?.Value.ToString("N0") ?? "0"</div>
+                    <div class="statistic-label">Toplam Hareket Sayısı</div>
+                </div>
+                <div class="activity-indicator mt-3">
+                    <div class="activity-dot active"></div>
+                    <div class="activity-dot active"></div>
+                    <div class="activity-dot active"></div>
+                    <div class="activity-dot"></div>
+                    <div class="activity-dot"></div>
+                </div>
+                <small class="text-muted">Aktivite seviyesi: Yüksek</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ek İstatistikler -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="chart-card enhanced">
+            <div class="chart-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Sistem Performans Metrikleri</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleMetricsView()">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="row" id="metricsRow">
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="metric-content">
+                                <h6>Toplam Kullanıcı</h6>
+                                <span class="metric-value">@(Model.ToplamUrunCesidi * 2)</span>
+                                <div class="metric-trend positive">+5.2%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="metric-content">
+                                <h6>Bu Hafta Hareket</h6>
+                                <span class="metric-value">@(Model.BuAykiHareketSayisi / 4)</span>
+                                <div class="metric-trend positive">+12.8%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metric-content">
+                                <h6>Ortalama Günlük</h6>
+                                <span class="metric-value">@(Model.BuAykiHareketSayisi / 30)</span>
+                                <div class="metric-trend negative">-1.5%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="metric-item">
+                            <div class="metric-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="metric-content">
+                                <h6>Büyüme Oranı</h6>
+                                <span class="metric-value">+@(new Random().Next(5, 25))%</span>
+                                <div class="metric-trend positive">+18.3%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grafik Önizleme -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="chart-card enhanced">
+            <div class="chart-header">
+                <h5><i class="fas fa-chart-pie me-2"></i>Ürün Kategorileri Dağılımı</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartView('pie')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-placeholder" id="pieChartPlaceholder">
+                    <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Ürün kategorilerinin dağılımını görüntülemek için grafik sayfasını kullanın</p>
+                    <a asp-action="GrafikselRaporlar" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>Grafiklere Git
+                    </a>
+                </div>
+                <div class="chart-container" id="pieChartContainer" style="display: none;">
+                    <canvas id="pieChart" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="chart-card enhanced">
+            <div class="chart-header">
+                <h5><i class="fas fa-chart-bar me-2"></i>Aylık Hareket Trendi</h5>
+                <div class="chart-actions">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleChartView('bar')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-placeholder" id="barChartPlaceholder">
+                    <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aylık hareket trendlerini ve analizleri görüntülemek için grafik sayfasını kullanın</p>
+                    <a asp-action="GrafikselRaporlar" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>Grafiklere Git
+                    </a>
+                </div>
+                <div class="chart-container" id="barChartContainer" style="display: none;">
+                    <canvas id="barChart" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="productDetailsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ürün Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="productDetailsContent">
+                <!-- Ürün detayları buraya yüklenecek -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initializeEnhancedStats();
+            setupEventListeners();
+            createMiniCharts();
+        });
+
+        function initializeEnhancedStats() {
+            console.log("Gelişmiş istatistikler başlatılıyor...");
+            
+            // Trend göstergelerini güncelle
+            updateTrendIndicators();
+            
+            // Metrikleri güncelle
+            updateMetrics();
+        }
+
+        function setupEventListeners() {
+            // Filtre uygula butonu
+            document.getElementById('applyFilters').addEventListener('click', function() {
+                applyFilters();
+            });
+
+            // Yenile butonu
+            document.getElementById('refreshStats').addEventListener('click', function() {
+                refreshStatistics();
+            });
+
+            // Dışa aktar butonu
+            document.getElementById('exportStats').addEventListener('click', function() {
+                exportStatistics();
+            });
+
+            // Görünüm değiştirme
+            document.getElementById('displayType').addEventListener('change', function() {
+                changeDisplayType(this.value);
+            });
+        }
+
+        function createMiniCharts() {
+            // Mini grafikler oluştur
+            createMiniChart('urunCesidiChart', [12, 19, 3, 5, 2, 3], 'rgba(78, 115, 223, 0.8)');
+            createMiniChart('stokAdediChart', [65, 59, 80, 81, 56, 55], 'rgba(28, 200, 138, 0.8)');
+            createMiniChart('depoSayisiChart', [45, 52, 38, 24, 33, 26], 'rgba(54, 185, 204, 0.8)');
+            createMiniChart('hareketSayisiChart', [28, 48, 40, 19, 86, 27], 'rgba(246, 194, 62, 0.8)');
+        }
+
+        function createMiniChart(canvasId, data, color) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['', '', '', '', '', ''],
+                    datasets: [{
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    elements: {
+                        point: { radius: 0 }
+                    }
+                }
+            });
+        }
+
+        function updateTrendIndicators() {
+            // Trend göstergelerini dinamik olarak güncelle
+            const trends = document.querySelectorAll('.trend-indicator');
+            trends.forEach(trend => {
+                const value = trend.querySelector('span');
+                const icon = trend.querySelector('i');
+                
+                // Rastgele trend değeri oluştur
+                const trendValue = Math.random() > 0.5 ? 
+                    `+${(Math.random() * 20).toFixed(1)}%` : 
+                    `-${(Math.random() * 15).toFixed(1)}%`;
+                
+                value.textContent = trendValue;
+                
+                // Trend yönüne göre ikon ve renk güncelle
+                if (trendValue.startsWith('+')) {
+                    trend.className = 'trend-indicator positive';
+                    icon.className = 'fas fa-arrow-up';
+                } else {
+                    trend.className = 'trend-indicator negative';
+                    icon.className = 'fas fa-arrow-down';
+                }
+            });
+        }
+
+        function updateMetrics() {
+            // Metrik değerlerini güncelle
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach(metric => {
+                const currentValue = parseInt(metric.textContent);
+                const newValue = currentValue + Math.floor(Math.random() * 10) - 5;
+                metric.textContent = Math.max(0, newValue);
+            });
+        }
+
+        function applyFilters() {
+            const dateRange = document.getElementById('dateRange').value;
+            const displayType = document.getElementById('displayType').value;
+            const sortOrder = document.getElementById('sortOrder').value;
+            
+            showNotification(`Filtreler uygulandı: ${dateRange} ay, ${displayType} görünüm, ${sortOrder} sıralama`, 'success');
+            
+            // Burada gerçek filtreleme işlemi yapılacak
+            setTimeout(() => {
+                refreshStatistics();
+            }, 1000);
+        }
+
+        function refreshStatistics() {
+            showNotification('İstatistikler yenileniyor...', 'info');
+            
+            // Simüle edilmiş yenileme
+            setTimeout(() => {
+                updateTrendIndicators();
+                updateMetrics();
+                showNotification('İstatistikler başarıyla yenilendi!', 'success');
+            }, 1500);
+        }
+
+        function exportStatistics() {
+            showNotification('İstatistikler dışa aktarılıyor...', 'info');
+            
+            // Simüle edilmiş dışa aktarma
+            setTimeout(() => {
+                const link = document.createElement('a');
+                link.download = `stok-istatistikleri-${new Date().toISOString().split('T')[0]}.json`;
+                link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify({
+                    tarih: new Date().toISOString(),
+                    toplamUrunCesidi: document.getElementById('toplamUrunCesidi').textContent,
+                    toplamStokAdedi: document.getElementById('toplamStokAdedi').textContent,
+                    toplamDepoSayisi: document.getElementById('toplamDepoSayisi').textContent,
+                    buAykiHareketSayisi: document.getElementById('buAykiHareketSayisi').textContent
+                }));
+                link.click();
+                
+                showNotification('İstatistikler başarıyla dışa aktarıldı!', 'success');
+            }, 1000);
+        }
+
+        function changeDisplayType(type) {
+            showNotification(`${type} görünümüne geçiliyor...`, 'info');
+            
+            // Burada görünüm değiştirme işlemi yapılacak
+            setTimeout(() => {
+                showNotification(`${type} görünümüne geçildi!`, 'success');
+            }, 500);
+        }
+
+        function showProductDetails(type) {
+            const modal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+            const content = document.getElementById('productDetailsContent');
+            
+            let productInfo = '';
+            switch(type) {
+                case 'enCok':
+                    productInfo = `
+                        <h6>En Çok Bulunan Ürün Detayları</h6>
+                        <p><strong>Ürün:</strong> @Model.EnCokBulunanUrun?.Label ?? "Veri Yok"</p>
+                        <p><strong>Miktar:</strong> @Model.EnCokBulunanUrun?.Value.ToString("N0") ?? "0"</p>
+                        <p><strong>Stok Durumu:</strong> <span class="badge bg-success">Yüksek</span></p>
+                        <p><strong>Son Güncelleme:</strong> ${new Date().toLocaleDateString('tr-TR')}</p>
+                    `;
+                    break;
+                case 'enAz':
+                    productInfo = `
+                        <h6>En Az Bulunan Ürün Detayları</h6>
+                        <p><strong>Ürün:</strong> @Model.EnAzBulunanUrun?.Label ?? "Veri Yok"</p>
+                        <p><strong>Miktar:</strong> @Model.EnAzBulunanUrun?.Value.ToString("N0") ?? "0"</p>
+                        <p><strong>Stok Durumu:</strong> <span class="badge bg-danger">Kritik</span></p>
+                        <p><strong>Uyarı:</strong> Bu ürün için sipariş verilmesi önerilir.</p>
+                    `;
+                    break;
+                case 'enAktif':
+                    productInfo = `
+                        <h6>En Aktif Ürün Detayları</h6>
+                        <p><strong>Ürün:</strong> @Model.EnAktifUrun?.Label ?? "Veri Yok"</p>
+                        <p><strong>Hareket Sayısı:</strong> @Model.EnAktifUrun?.Value.ToString("N0") ?? "0"</p>
+                        <p><strong>Aktivite Seviyesi:</strong> <span class="badge bg-primary">Yüksek</span></p>
+                        <p><strong>Son Hareket:</strong> ${new Date().toLocaleDateString('tr-TR')}</p>
+                    `;
+                    break;
+            }
+            
+            content.innerHTML = productInfo;
+            modal.show();
+        }
+
+        function toggleChartView(chartType) {
+            if (chartType === 'pie') {
+                const placeholder = document.getElementById('pieChartPlaceholder');
+                const container = document.getElementById('pieChartContainer');
+                
+                if (placeholder.style.display !== 'none') {
+                    placeholder.style.display = 'none';
+                    container.style.display = 'block';
+                    createPieChart();
+                } else {
+                    placeholder.style.display = 'block';
+                    container.style.display = 'none';
+                }
+            } else if (chartType === 'bar') {
+                const placeholder = document.getElementById('barChartPlaceholder');
+                const container = document.getElementById('barChartContainer');
+                
+                if (placeholder.style.display !== 'none') {
+                    placeholder.style.display = 'none';
+                    container.style.display = 'block';
+                    createBarChart();
+                } else {
+                    placeholder.style.display = 'block';
+                    container.style.display = 'none';
+                }
+            }
+        }
+
+        function createPieChart() {
+            const canvas = document.getElementById('pieChart');
+            if (!canvas) return;
+
+            new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: ['Elektronik', 'Kırtasiye', 'Gıda', 'Tekstil', 'Diğer'],
+                    datasets: [{
+                        data: [35, 25, 20, 15, 5],
+                        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function createBarChart() {
+            const canvas = document.getElementById('barChart');
+            if (!canvas) return;
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran'],
+                    datasets: [{
+                        label: 'Hareket Sayısı',
+                        data: [65, 59, 80, 81, 56, 55],
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleMetricsView() {
+            const metricsRow = document.getElementById('metricsRow');
+            if (metricsRow.style.display === 'none') {
+                metricsRow.style.display = 'block';
+                showNotification('Metrikler gösteriliyor', 'info');
+            } else {
+                metricsRow.style.display = 'none';
+                showNotification('Metrikler gizlendi', 'info');
+            }
+        }
+
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+}

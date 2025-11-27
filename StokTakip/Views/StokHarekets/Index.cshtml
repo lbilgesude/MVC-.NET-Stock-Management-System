@@ -1,0 +1,658 @@
+﻿@model IEnumerable<StokTakip.Models.StokHareket>
+
+@{
+    ViewData["Title"] = "Stok Hareket Listesi";
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<!-- Excel'e Aktar Butonu -->
+<div class="mb-3">
+    <a href="@Url.Action("ExportToExcel", "StokHarekets")" class="btn btn-success">
+        <i class="fas fa-file-excel"></i>
+        Excel'e Aktar
+    </a>
+</div>
+
+<!-- Veri Tablosu -->
+<div class="data-table-container">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="min-width: 200px;">Stok Bilgileri</th>
+                        <th style="min-width: 120px;">Hareket Tipi</th>
+                        <th style="min-width: 100px; text-align: center;">Miktar</th>
+                        <th style="min-width: 150px;">Depo Bilgileri</th>
+                        <th style="min-width: 120px;">Sorumlu</th>
+                        <th style="min-width: 120px;">Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="product-info">
+                                    <div class="product-name">@(item.Stok?.StokAd ?? "Belirtilmemiş")</div>
+                                    <div class="product-code">ID: @item.Id</div>
+                                    <div class="product-detail">@(item.Aciklama ?? "Açıklama yok")</div>
+                                </div>
+                            </td>
+                            <td>
+                                @{
+                                    var hareketTipClass = item.HareketTipNavigation?.HareketTipAdi switch
+                                    {
+                                        "Giriş" => "badge-success",
+                                        "Çıkış" => "badge-danger",
+                                        "Transfer" => "badge-info",
+                                        _ => "badge-secondary"
+                                    };
+                                }
+                                <span class="badge @hareketTipClass">
+                                    <i class="fas fa-@(item.HareketTipNavigation?.HareketTipAdi == "Giriş" ? "arrow-down" : 
+                                                      item.HareketTipNavigation?.HareketTipAdi == "Çıkış" ? "arrow-up" : 
+                                                      "exchange-alt")"></i>
+                                    @(item.HareketTipNavigation?.HareketTipAdi ?? "Belirtilmemiş")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="quantity-display">
+                                    <span class="quantity-number">@item.HareketMiktar.ToString("N2")</span>
+                                    <span class="quantity-unit">@(item.Stok?.StokOlcuBirimNavigation?.OlcuBirimAdi ?? "Birim")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="depo-info">
+                                    <div class="depo-main">
+                                        <i class="fas fa-warehouse text-primary"></i>
+                                        <span class="depo-name">@(item.DepoEslestirme?.Depo?.DepoAdi ?? "Belirtilmemiş")</span>
+                                    </div>
+                                    @if (item.DepoEslestirme?.AltDepo != null)
+                                    {
+                                        <div class="subdepo-info">
+                                            <i class="fas fa-box text-secondary"></i>
+                                            <span class="subdepo-name">@item.DepoEslestirme?.AltDepo?.AltDepoAdi</span>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <i class="fas fa-user text-info"></i>
+                                    <span class="user-name">@(item.Sorumlu?.SorumluAdi ?? "Belirtilmemiş")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-main">@item.HareketTarihi.ToString("dd.MM.yyyy")</div>
+                                    <div class="date-time">@item.HareketTarihi.ToString("HH:mm")</div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Özet Bilgiler -->
+        <div class="table-summary">
+            <div class="summary-item">
+                <i class="fas fa-list text-primary"></i>
+                <span class="summary-label">Toplam Hareket:</span>
+                <span class="summary-value">@Model.Count()</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-down text-success"></i>
+                <span class="summary-label">Giriş:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Giriş")</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-up text-danger"></i>
+                <span class="summary-label">Çıkış:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Çıkış")</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-exchange-alt text-info"></i>
+                <span class="summary-label">Transfer:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Transfer")</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h3 class="empty-state-title">Hareket Bulunamadı</h3>
+            <p class="empty-state-message">Arama kriterlerinize uygun stok hareketi bulunamadı. Farklı arama terimleri deneyin veya yeni hareket ekleyin.</p>
+            <div class="empty-state-actions">
+                <a href="@Url.Action("Create")" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Yeni Hareket Ekle
+                </a>
+                <a href="@Url.Action("Giris")" class="btn btn-success">
+                    <i class="fas fa-arrow-down"></i>
+                    Stok Girişi
+                </a>
+                <a href="@Url.Action("Cikis")" class="btn btn-danger">
+                    <i class="fas fa-arrow-up"></i>
+                    Stok Çıkışı
+                </a>
+                <a href="@Url.Action("Transfer")" class="btn btn-info">
+                    <i class="fas fa-exchange-alt"></i>
+                    Stok Transferi
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+/* Stok Hareket Listesi Özel Stilleri */
+
+/* Arama ve Filtre Bölümü */
+.search-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+    width: 100%;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.search-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: white;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.date-range .search-input {
+    flex: 1;
+    min-width: 120px;
+}
+
+.date-separator {
+    color: #6b7280;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.product-detail {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.quantity-unit {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.date-main {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.date-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.empty-state-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.empty-state-actions .btn {
+    min-width: 140px;
+}
+
+/* Veri Tablosu */
+.data-table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.data-table thead th {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 1.5rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+    font-size: 0.9rem;
+}
+
+.data-table tbody td {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+}
+
+.data-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* Ürün Bilgileri */
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.product-code {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-family: monospace;
+}
+
+/* Miktar Gösterimi */
+.quantity-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.quantity-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Depo Bilgileri */
+.depo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.depo-main {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.depo-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.subdepo-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+.subdepo-name {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* İşlem Butonları */
+.action-buttons .btn {
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    min-width: 180px;
+    height: auto;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge Stilleri */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-danger {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Özet Bölümü */
+.table-summary {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-top: 1px solid #e5e7eb;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+}
+
+.summary-item i {
+    font-size: 1.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-left: auto;
+}
+
+/* Boş Durum */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.empty-state-message {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive Tasarım */
+@@media (max-width: 1024px) {
+    .search-row {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .date-range {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+    
+    .date-range .search-input {
+        min-width: 110px;
+    }
+    
+    .search-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .search-buttons,
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .table-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .summary-item {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .empty-state-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@@media (max-width: 768px) {
+    .search-section {
+        padding: 1.5rem;
+    }
+    
+    .search-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .search-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .search-buttons,
+    .action-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 1rem 0.75rem;
+    }
+    
+    .product-name {
+        font-size: 0.9rem;
+    }
+    
+    .quantity-number {
+        font-size: 1.1rem;
+    }
+    
+    .badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+}
+
+@@media (max-width: 480px) {
+    .search-section {
+        padding: 1rem;
+    }
+    
+    .search-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .date-range {
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .date-range .search-input {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .date-separator {
+        display: none;
+    }
+    
+    .search-actions {
+        gap: 0.75rem;
+    }
+    
+    .search-buttons,
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .search-buttons .btn,
+    .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 1.25rem 2.5rem;
+        font-size: 1.1rem;
+        min-width: 200px;
+    }
+    
+    .data-table-container {
+        margin: 1rem 0;
+    }
+    
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .product-name {
+        font-size: 0.85rem;
+    }
+}
+</style>

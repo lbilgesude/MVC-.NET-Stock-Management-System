@@ -1,0 +1,129 @@
+@{
+    var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["Action"]?.ToString();
+    
+    // Sayfa başlıkları ve açıklamaları
+    var pageInfo = new Dictionary<string, (string title, string subtitle, string icon)>
+    {
+        {"Stoks", ("Stok Durum Listesi", "Tüm stok kartlarının mevcut durumlarını görüntüleyin", "fas fa-boxes")},
+        {"Depoes", ("Depo Yönetimi", "Ana depoları yönetin ve düzenleyin", "fas fa-warehouse")},
+        {"AltDepoes", ("Alt Depo Yönetimi", "Alt depoları yönetin ve düzenleyin", "fas fa-box")},
+        {"StokHarekets", ("Stok Hareketleri", "Stok giriş, çıkış ve transfer işlemlerini yönetin", "fas fa-exchange-alt")},
+        {"Kullanicis", ("Kullanıcı Yönetimi", "Sistem kullanıcılarını yönetin ve düzenleyin", "fas fa-users")},
+        {"Rapor", ("Raporlar", "Stok hareket raporları ve istatistikleri görüntüleyin", "fas fa-chart-bar")},
+        {"KullaniciTips", ("Kullanıcı Tipleri", "Kullanıcı rollerini ve yetkilerini yönetin", "fas fa-user-tag")},
+        {"OlcuBirimis", ("Ölçü Birimleri", "Sistemde kullanılan ölçü birimlerini yönetin", "fas fa-ruler")},
+        {"Sorumlus", ("Sorumlular", "Stok sorumlularını yönetin ve düzenleyin", "fas fa-user-shield")},
+        {"HareketTips", ("Hareket Tipleri", "Stok hareket türlerini yönetin", "fas fa-tags")}
+    };
+    
+    var currentPage = pageInfo.ContainsKey(controller) ? pageInfo[controller] : ("", "", "");
+    
+    // Action'a göre özel başlıklar
+    if (controller == "StokHarekets")
+    {
+        switch (action)
+        {
+            case "Giris":
+                currentPage = ("Stok Girişi", "Yeni stok giriş işlemi yapın", "fas fa-arrow-down");
+                break;
+            case "Cikis":
+                currentPage = ("Stok Çıkışı", "Stok çıkış işlemi yapın", "fas fa-arrow-up");
+                break;
+            case "Transfer":
+                currentPage = ("Stok Transferi", "Depolar arası stok transferi yapın", "fas fa-exchange-alt");
+                break;
+            case "Index":
+                currentPage = ("Stok Hareket Listesi", "Tüm stok hareketlerini görüntüleyin", "fas fa-list");
+                break;
+        }
+    }
+    else if (controller == "Rapor")
+    {
+        switch (action)
+        {
+            case "GrafikselRaporlar":
+                currentPage = ("Grafiksel Raporlar", "Görsel stok analizleri ve grafikleri", "fas fa-chart-pie");
+                break;
+            case "Istatistikler":
+                currentPage = ("İstatistikler", "Detaylı stok istatistikleri ve analizleri", "fas fa-chart-line");
+                break;
+        }
+    }
+    
+    var title = currentPage.Item1;
+    var subtitle = currentPage.Item2;
+    var icon = currentPage.Item3;
+}
+
+<!-- Modern Sayfa Başlığı -->
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="@icon"></i>
+        @title
+    </h1>
+    @if (!string.IsNullOrEmpty(subtitle))
+    {
+        <p class="page-subtitle">@subtitle</p>
+    }
+    
+    <!-- Sayfa İşlem Butonları -->
+    <div class="page-actions">
+        @if (controller == "Depoes")
+        {
+            <a href="@Url.Action("Create", "Depoes")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Depo
+            </a>
+        }
+        else if (controller == "AltDepoes")
+        {
+            <a href="@Url.Action("Create", "AltDepoes")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Alt Depo
+            </a>
+        }
+        else if (controller == "StokHarekets" && action != "Index")
+        {
+            <a href="@Url.Action("Index", "StokHarekets")" class="btn btn-secondary">
+                <i class="fas fa-list"></i>
+                Hareket Listesi
+            </a>
+        }
+        else if (controller == "Kullanicis")
+        {
+            <a href="@Url.Action("Create", "Kullanicis")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Kullanıcı
+            </a>
+        }
+        else if (controller == "KullaniciTips")
+        {
+            <a href="@Url.Action("Create", "KullaniciTips")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Kullanıcı Tipi
+            </a>
+        }
+        else if (controller == "OlcuBirimis")
+        {
+            <a href="@Url.Action("Create", "OlcuBirimis")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Ölçü Birimi
+            </a>
+        }
+        else if (controller == "Sorumlus")
+        {
+            <a href="@Url.Action("Create", "Sorumlus")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Sorumlu
+            </a>
+        }
+        else if (controller == "HareketTips")
+        {
+            <a href="@Url.Action("Create", "HareketTips")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Yeni Hareket Tipi
+            </a>
+        }
+    </div>
+</div>

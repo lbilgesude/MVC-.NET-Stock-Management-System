@@ -1,0 +1,306 @@
+﻿@model IEnumerable<StokTakip.Models.Kullanici>
+
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    string currentFilter = ViewData["CurrentFilter"] as string;
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<!-- Başarı ve Hata Mesajları -->
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i>
+        @ViewBag.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        @ViewBag.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Arama ve Filtre Bölümü -->
+<div class="search-section">
+    <form method="get" class="search-form">
+        <div class="search-row">
+            <div class="search-group">
+                <label class="search-label">Kullanıcı Adı</label>
+                <input type="text" name="searchString" class="search-input" placeholder="Kullanıcı adı ile ara..." value="@currentFilter" />
+            </div>
+            <div class="search-group">
+                <label class="search-label">Kullanıcı Tipi</label>
+                <select name="kullaniciTipId" class="search-input">
+                    <option value="">Tüm Tipler</option>
+                    @foreach (var tip in ViewBag.KullaniciTips ?? new List<StokTakip.Models.KullaniciTip>())
+                    {
+                        var isSelected = Context.Request.Query["kullaniciTipId"] == tip.Id.ToString();
+                        <option value="@tip.Id" selected="@isSelected">@tip.KultipAdi</option>
+                    }
+                </select>
+            </div>
+            <div class="search-buttons">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-search"></i>
+                    Ara
+                </button>
+                @{
+                    var hasSearch = !string.IsNullOrEmpty(currentFilter) || !string.IsNullOrEmpty(Context.Request.Query["kullaniciTipId"]);
+                }
+                @if (hasSearch)
+                {
+                    <a href="@Url.Action("Index")" class="btn btn-outline btn-sm">
+                        <i class="fas fa-times"></i>
+                        Temizle
+                    </a>
+                }
+                @if (ViewData["ShowOnlyActive"] is bool showOnlyActive && showOnlyActive)
+                {
+                    <a href="@Url.Action("Index", new { searchString = currentFilter, kullaniciTipId = Context.Request.Query["kullaniciTipId"], showOnlyActive = false })" class="btn btn-info btn-sm">
+                        <i class="fas fa-eye"></i>
+                        Tümünü Göster
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", new { searchString = currentFilter, kullaniciTipId = Context.Request.Query["kullaniciTipId"], showOnlyActive = true })" class="btn btn-warning btn-sm">
+                        <i class="fas fa-eye-slash"></i>
+                        Sadece Aktifler
+                    </a>
+                }
+                <a href="@Url.Action("ExportToExcel", "Kullanicis", new { searchString = currentFilter, kullaniciTipId = Context.Request.Query["kullaniciTipId"] })" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel"></i>
+                    Excel
+                </a>
+                <a href="@Url.Action("Hareketler", "Kullanicis")" class="btn btn-info btn-sm">
+                    <i class="fas fa-history"></i>
+                    Hareketler
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Veri Tablosu -->
+<div class="data-table-container">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="min-width: 200px;">Kullanıcı Bilgileri</th>
+                    <th style="min-width: 120px; text-align: center;">Kullanıcı Tipi</th>
+                    <th style="min-width: 100px; text-align: center;">Durum</th>
+                    <th style="min-width: 150px; text-align: center;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <div class="user-name">
+                                    <i class="fas fa-user text-primary"></i>
+                                    @(item.KulAd + " " + item.KulSoyad)
+                                </div>
+                                <div class="user-username">@item.KulUsername</div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-primary">@(item.KulTipNavigation?.KultipAdi ?? "Belirtilmemiş")</span>
+                        </td>
+                        <td class="text-center">
+                            @if (item.Statu)
+                            {
+                                <span class="badge badge-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    Aktif
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">
+                                    <i class="fas fa-ban"></i>
+                                    Pasif
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        
+        <!-- Özet Bilgiler -->
+        <div class="table-summary">
+            <div class="summary-item">
+                <i class="fas fa-users text-primary"></i>
+                <span class="summary-label">Toplam Kullanıcı:</span>
+                <span class="summary-value">@Model.Count()</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span class="summary-label">Aktif Kullanıcılar:</span>
+                <span class="summary-value">@Model.Count(x => x.Statu)</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-ban text-danger"></i>
+                <span class="summary-label">Pasif Kullanıcılar:</span>
+                <span class="summary-value">@Model.Count(x => !x.Statu)</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3 class="empty-state-title">Kullanıcı Bulunamadı</h3>
+            <p class="empty-state-message">Henüz hiç kullanıcı eklenmemiş. İlk kullanıcıyı ekleyerek başlayın.</p>
+            <a href="@Url.Action("Create")" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                İlk Kullanıcıyı Ekle
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+/* Kullanıcılar Özel Stilleri */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-name {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-username {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-buttons .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.action-buttons .btn-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+    border: none;
+}
+
+.action-buttons .btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+    border: none;
+}
+
+.action-buttons .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+}
+
+/* Tablo Özeti */
+.table-summary {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 1.5rem;
+    border-radius: 0 0 15px 15px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 0;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #374151;
+}
+
+.summary-item i {
+    font-size: 1.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.summary-value {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #1f2937;
+}
+
+/* Responsive Tasarım */
+@@media (max-width: 768px) {
+    .table-summary {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .summary-item {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@@media (max-width: 480px) {
+    .summary-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .summary-label,
+    .summary-value {
+        font-size: 0.875rem;
+    }
+}
+</style>
+

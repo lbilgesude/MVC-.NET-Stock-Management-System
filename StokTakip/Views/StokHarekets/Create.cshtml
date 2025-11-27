@@ -1,0 +1,79 @@
+﻿@model StokTakip.Models.StokHareket
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>StokHareket</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="StokId" class="control-label"></label>
+                <select asp-for="StokId" class="form-control" asp-items="ViewBag.StokId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DepoEslestirmeId" class="control-label"></label>
+                <select asp-for="DepoEslestirmeId" class="form-control" asp-items="ViewBag.DepoEslestirmeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SorumluId" class="control-label"></label>
+                <select asp-for="SorumluId" class="form-control" asp-items="ViewBag.SorumluId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="HareketTip" class="control-label"></label>
+                <select asp-for="HareketTip" class="form-control" asp-items="ViewBag.HareketTip"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Aciklama" class="control-label"></label>
+                <input asp-for="Aciklama" class="form-control" />
+                <span asp-validation-for="Aciklama" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HareketMiktar" class="control-label"></label>
+                <input asp-for="HareketMiktar" class="form-control" />
+                <span asp-validation-for="HareketMiktar" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HareketTarihi" class="control-label"></label>
+                <input asp-for="HareketTarihi" class="form-control" />
+                <span asp-validation-for="HareketTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OlusturanKullanici" class="control-label"></label>
+                <select asp-for="OlusturanKullanici" class="form-control" asp-items="ViewBag.OlusturanKullanici"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="GuncelleyenKullanici" class="control-label"></label>
+                <select asp-for="GuncelleyenKullanici" class="form-control" asp-items="ViewBag.GuncelleyenKullanici"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="OlusturmaTarihi" class="control-label"></label>
+                <input asp-for="OlusturmaTarihi" class="form-control" />
+                <span asp-validation-for="OlusturmaTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GuncellemeTarihi" class="control-label"></label>
+                <input asp-for="GuncellemeTarihi" class="form-control" />
+                <span asp-validation-for="GuncellemeTarihi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

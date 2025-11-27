@@ -1,0 +1,122 @@
+﻿@model StokTakip.Models.Kullanici
+
+@{
+    ViewData["Title"] = "Kullanıcı Sil";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Kullanıcı Silme Onayı
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger border-danger" role="alert">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                            <h4 class="alert-heading mb-0">DİKKAT: Bu işlem çok kapsamlıdır!</h4>
+                        </div>
+                        
+                        <div class="user-info-card mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user fa-2x text-danger me-3"></i>
+                                <div>
+                                    <h5 class="mb-1">@Model.KulAd @Model.KulSoyad</h5>
+                                    <p class="mb-0 text-muted">(@Model.KulUsername)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="mb-3">Bu kullanıcıyı silmek istediğinizden emin misiniz?</p>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="text-danger mb-3">
+                            <i class="fas fa-list me-2"></i>Bu işlem şunları da silecektir:
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM STOK HAREKETLERİ</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM STOK DURUMLARI</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM STOKLAR</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM ALT DEPOLAR VE DEPOLAR</strong>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM HAREKET TİPLERİ</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM ÖLÇÜ BİRİMLERİ</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM SORUMLULAR</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-danger me-2"></i>
+                                        <strong>TÜM KULLANICI TİPLERİ</strong>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning border-warning mt-4">
+                            <i class="fas fa-warning me-2"></i>
+                            <strong>Bu işlem geri alınamaz ve tüm ilgili veriler veritabanından tamamen silinecektir.</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger btn-lg me-3">
+                            <i class="fas fa-trash me-2"></i>Evet, Tümünü Kalıcı Olarak Sil
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-times me-2"></i>İptal
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-info-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.alert-danger {
+    border-left: 4px solid #dc3545;
+}
+
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+</style>

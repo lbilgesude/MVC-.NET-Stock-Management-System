@@ -1,0 +1,89 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Veritabanı Test Sayfası";
+}
+
+<div class="container">
+    <h1>Veritabanı Test Sayfası</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Toplam Veri Sayıları</h3>
+            <ul class="list-group">
+                <li class="list-group-item">Toplam Hareket: <strong>@Model.ToplamHareket</strong></li>
+                <li class="list-group-item">Toplam Stok: <strong>@Model.ToplamStok</strong></li>
+                <li class="list-group-item">Toplam Depo: <strong>@Model.ToplamDepo</strong></li>
+                <li class="list-group-item">Toplam Alt Depo: <strong>@Model.ToplamAltDepo</strong></li>
+                <li class="list-group-item">Toplam Stok Durum: <strong>@Model.ToplamStokDurum</strong></li>
+                <li class="list-group-item">Toplam Hareket Tip: <strong>@Model.ToplamHareketTip</strong></li>
+                <li class="list-group-item">Toplam Kullanıcı: <strong>@Model.ToplamKullanici</strong></li>
+            </ul>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>Hareket Tipleri</h3>
+            <ul class="list-group">
+                @foreach (var tip in Model.HareketTipleri)
+                {
+                    <li class="list-group-item">
+                        @tip.HareketTipAdi - İşlem Göstergesi: @tip.IslemGostergesi
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Son 5 Hareket</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Stok</th>
+                        <th>Hareket Tipi</th>
+                        <th>Miktar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var hareket in Model.SonHareketler)
+                    {
+                        <tr>
+                            <td>@hareket.HareketTarihi.ToString("dd.MM.yyyy")</td>
+                            <td>@hareket.StokAd</td>
+                            <td>@hareket.HareketTip</td>
+                            <td>@hareket.HareketMiktar</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>Stok Durumları</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Stok Adı</th>
+                        <th>Depo</th>
+                        <th>Miktar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stok in Model.StokDurumlari)
+                    {
+                        <tr>
+                            <td>@stok.StokAd</td>
+                            <td>@stok.DepoAd</td>
+                            <td>@stok.DurumMiktar</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <a href="/Rapor/GrafikselRaporlar" class="btn btn-primary">Grafiksel Raporlara Git</a>
+    </div>
+</div>

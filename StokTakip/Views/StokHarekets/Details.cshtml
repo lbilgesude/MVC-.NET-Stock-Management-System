@@ -1,0 +1,251 @@
+﻿@model StokTakip.Models.StokHareket
+
+@{
+    ViewData["Title"] = "Stok Hareket Detayları";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Stok Hareket Detayları
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Sol Kolon - Temel Bilgiler -->
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Temel Bilgiler</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ürün:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info fs-6">@(Model.Stok?.StokAd ?? "Belirtilmemiş")</span>
+                                            @if (!string.IsNullOrEmpty(Model.Stok?.StokMarka))
+                                            {
+                                                <span class="badge bg-secondary ms-2">@Model.Stok.StokMarka</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Hareket Tipi:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-primary fs-6">@(Model.HareketTipNavigation?.HareketTipAdi ?? "Belirtilmemiş")</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Miktar:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-success fs-5">@Model.HareketMiktar</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Hareket Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-calendar-alt me-2"></i>
+                                            @Model.HareketTarihi.ToString("dd.MM.yyyy HH:mm")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Kolon - Depo ve Sorumlu Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-warehouse me-2"></i>Depo ve Sorumlu</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ana Depo:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-warning text-dark">@(Model.DepoEslestirme?.Depo?.DepoAdi ?? "Belirtilmemiş")</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Alt Depo:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info text-dark">@(Model.DepoEslestirme?.AltDepo?.AltDepoAdi ?? "Belirtilmemiş")</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Sorumlu:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-secondary">@(Model.Sorumlu?.SorumluAdi ?? "Belirtilmemiş")</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Oluşturan Kullanıcı:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-user me-2"></i>
+                                            @(Model.OlusturanKullaniciNavigation != null ? $"{Model.OlusturanKullaniciNavigation.KulAd} {Model.OlusturanKullaniciNavigation.KulSoyad}" : "Belirtilmemiş")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Güncelleyen Kullanıcı:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-user-edit me-2"></i>
+                                            @(Model.GuncelleyenKullaniciNavigation != null ? $"{Model.GuncelleyenKullaniciNavigation.KulAd} {Model.GuncelleyenKullaniciNavigation.KulSoyad}" : "Güncellenmemiş")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FIFO Detayları -->
+                    @if (!string.IsNullOrEmpty(Model.Aciklama) && Model.Aciklama.Contains("FIFO Detayları:"))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-warning">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-sort-amount-down me-2"></i>
+                                            FIFO Detayları
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        @{
+                                            var fifoText = Model.Aciklama;
+                                            if (fifoText.Contains("FIFO Detayları:"))
+                                            {
+                                                var fifoStart = fifoText.IndexOf("FIFO Detayları:");
+                                                var fifoContent = fifoText.Substring(fifoStart);
+                                                var fifoParts = fifoContent.Replace("FIFO Detayları:", "").Split(',');
+                                                
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover">
+                                                        <thead class="table-warning">
+                                                            <tr>
+                                                                <th><i class="fas fa-calendar me-2"></i>Giriş Tarihi</th>
+                                                                <th><i class="fas fa-boxes me-2"></i>Kullanılan Miktar</th>
+                                                                <th><i class="fas fa-info-circle me-2"></i>Detay</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var part in fifoParts)
+                                                            {
+                                                                var cleanPart = part.Trim();
+                                                                if (!string.IsNullOrEmpty(cleanPart) && cleanPart.Contains("'de girişi yapılan"))
+                                                                {
+                                                                    var dateMatch = System.Text.RegularExpressions.Regex.Match(cleanPart, @"(\d{2}\.\d{2}\.\d{4} \d{2}:\d{2})");
+                                                                    var amountMatch = System.Text.RegularExpressions.Regex.Match(cleanPart, @"(\d+)\s+adet");
+                                                                    
+                                                                    if (dateMatch.Success && amountMatch.Success)
+                                                                    {
+                                                                        <tr>
+                                                                            <td>
+                                                                                <span class="badge bg-primary">
+                                                                                    <i class="fas fa-clock me-1"></i>
+                                                                                    @dateMatch.Groups[1].Value
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="badge bg-success fs-6">
+                                                                                    @amountMatch.Groups[1].Value adet
+                                                                                </span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <small class="text-muted">
+                                                                                    <i class="fas fa-arrow-right me-1"></i>
+                                                                                    Bu tarihte girişi yapılan ürünlerden kullanıldı
+                                                                                </small>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Açıklama -->
+                    @if (!string.IsNullOrEmpty(Model.Aciklama))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0"><i class="fas fa-comment me-2"></i>Açıklama</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="mb-0">@Model.Aciklama</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Sistem Bilgileri -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Sistem Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">
+                                                <i class="fas fa-plus-circle me-1"></i>
+                                                <strong>Oluşturma:</strong> @(Model.OlusturmaTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Belirtilmemiş")
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">
+                                                <i class="fas fa-edit me-1"></i>
+                                                <strong>Güncelleme:</strong> @(Model.GuncellemeTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Güncellenmemiş")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Listeye Dön
+                            </a>
+                        </div>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa yüklendiğinde animasyonlar
+        $(document).ready(function() {
+            $('.card').hide().fadeIn(500);
+            $('.badge').hide().fadeIn(800);
+        });
+    </script>
+}

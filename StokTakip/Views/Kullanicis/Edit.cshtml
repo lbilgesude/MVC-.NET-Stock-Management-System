@@ -1,0 +1,138 @@
+﻿@model StokTakip.Models.Kullanici
+
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        Kullanıcı Bilgileri
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" asp-route-id="@Model.Id">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KulUsername" class="form-label fw-bold">
+                                        <i class="fas fa-user me-2"></i>Kullanıcı Adı
+                                    </label>
+                                    <input asp-for="KulUsername" class="form-control form-control-lg" placeholder="Kullanıcı adını girin" />
+                                    <span asp-validation-for="KulUsername" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KulTip" class="form-label fw-bold">
+                                        <i class="fas fa-user-tag me-2"></i>Kullanıcı Tipi
+                                    </label>
+                                    <select asp-for="KulTip" class="form-select form-select-lg" asp-items="ViewBag.KulTip"></select>
+                                    <span asp-validation-for="KulTip" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KulAd" class="form-label fw-bold">
+                                        <i class="fas fa-id-card me-2"></i>Ad
+                                    </label>
+                                    <input asp-for="KulAd" class="form-control form-control-lg" placeholder="Adını girin" />
+                                    <span asp-validation-for="KulAd" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KulSoyad" class="form-label fw-bold">
+                                        <i class="fas fa-id-card me-2"></i>Soyad
+                                    </label>
+                                    <input asp-for="KulSoyad" class="form-control form-control-lg" placeholder="Soyadını girin" />
+                                    <span asp-validation-for="KulSoyad" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-toggle-on me-2"></i>Durum
+                                    </label>
+                                    <div class="form-check form-switch form-switch-lg">
+                                        <input class="form-check-input" type="checkbox" asp-for="Statu">
+                                        <label class="form-check-label fw-bold" asp-for="Statu">
+                                            Aktif
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-warning btn-lg me-3">
+                                    <i class="fas fa-save me-2"></i>Bilgileri Güncelle
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>İptal
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-key me-2"></i>
+                        Şifre Değiştir
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["PasswordSuccess"] != null)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>@TempData["PasswordSuccess"]
+                        </div>
+                    }
+                    @if (TempData["PasswordError"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i>@TempData["PasswordError"]
+                        </div>
+                    }
+                    <form asp-action="ChangePassword" method="post">
+                        <input type="hidden" name="Id" value="@Model.Id" />
+                        <div class="form-group mb-4">
+                            <label for="YeniSifre" class="form-label fw-bold">
+                                <i class="fas fa-lock me-2"></i>Yeni Şifre
+                            </label>
+                            <input type="password" name="YeniSifre" class="form-control form-control-lg" placeholder="Yeni şifre girin" required />
+                        </div>
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-info btn-lg">
+                                <i class="fas fa-key me-2"></i>Şifreyi Değiştir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,75 @@
+{
+  "Uyarilar": [
+    {
+      "Id": 1,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'Merkez Alt Depo 1' için stok miktarı (0) minimum değerin (10) altına düştü! ALTDEPO_ID:26",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-09-30T18:06:17.9851085+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 2,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-3 ALT-1' için stok miktarı (5) minimum değerin (50) altına düştü! ALTDEPO_ID:23",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-09-30T23:56:47.0788531+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 3,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-1 ALT-2' için stok miktarı (0) minimum değerin (50) altına düştü! ALTDEPO_ID:29",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-09-30T23:57:18.007248+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 4,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-3 ALT-1' için stok miktarı (5) minimum değerin (50) altına düştü! ALTDEPO_ID:23",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-09-30T23:57:18.0360018+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 5,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-3 ALT-1' için stok miktarı (2) minimum değerin (10) altına düştü! ALTDEPO_ID:23",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-10-01T00:02:49.4937651+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 6,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-1 ALT-2' için stok miktarı (3) minimum değerin (10) altına düştü! ALTDEPO_ID:29",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-10-01T00:02:49.5741087+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    },
+    {
+      "Id": 7,
+      "Baslik": "⚠️ Minimum Stok Uyarısı!",
+      "Mesaj": "Alt depo 'CP-3 ALT-1' için stok miktarı (1) minimum değerin (10) altına düştü! ALTDEPO_ID:23",
+      "Tip": 1,
+      "OlusturmaTarihi": "2025-10-01T15:13:44.1342391+03:00",
+      "Okundu": false,
+      "AksiyonUrl": null,
+      "AksiyonText": null
+    }
+  ],
+  "NextId": 8
+}

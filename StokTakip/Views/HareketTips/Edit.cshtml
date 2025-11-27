@@ -1,0 +1,49 @@
+﻿@model StokTakip.Models.HareketTip
+
+@{
+    ViewData["Title"] = "Hareket Tipi Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">Hareket Tipi Bilgilerini Düzenle</h4>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="OlusturmaTarihi" />
+                    <input type="hidden" asp-for="OlusturanKullanici" />
+
+                    <div class="mb-3">
+                        <label asp-for="HareketTipAdi" class="form-label">Hareket Tipi Adı</label>
+                        <input asp-for="HareketTipAdi" class="form-control" />
+                        <span asp-validation-for="HareketTipAdi" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" asp-for="IslemGostergesi" />
+                        <label class="form-check-label" asp-for="IslemGostergesi">Bu işlem stok miktarını artırır (+)</label>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" asp-for="Statu" />
+                        <label class="form-check-label" asp-for="Statu">Aktif</label>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <input type="submit" value="Kaydet" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,68 @@
+﻿@model StokTakip.Models.KullaniciTip
+
+@{
+    ViewData["Title"] = "Kullanıcı Tipi Detayları";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="card-title">@ViewData["Title"]</h4>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Kullanıcı Tipi Adı</dt>
+                    <dd class="col-sm-8">@Html.DisplayFor(model => model.KultipAdi)</dd>
+
+                    <dt class="col-sm-4">Durum</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Statu)
+                        {
+                            <span class="badge bg-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Pasif</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 border-top pt-3 mt-3">
+                        Oluşturan Kullanıcı
+                    </dt>
+                    <dd class="col-sm-8 border-top pt-3 mt-3">
+                        @(Model.OlusturanKullaniciNavigation?.KulUsername ?? "N/A")
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        Oluşturma Tarihi
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.OlusturmaTarihi)
+                    </dd>
+
+                    @if (Model.GuncelleyenKullanici != null)
+                    {
+                        <dt class="col-sm-4 border-top pt-3 mt-3">
+                            Güncelleyen Kullanıcı
+                        </dt>
+                        <dd class="col-sm-8 border-top pt-3 mt-3">
+                            @(Model.GuncelleyenKullaniciNavigation?.KulUsername ?? "N/A")
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            Güncelleme Tarihi
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.GuncellemeTarihi)
+                        </dd>
+                    }
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Düzenle</a>
+                <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+            </div>
+        </div>
+    </div>
+</div>

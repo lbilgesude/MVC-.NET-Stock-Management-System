@@ -1,0 +1,134 @@
+@model StokTakip.Models.Stok
+
+@{
+    ViewData["Title"] = "Yeni Stok Ekle";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Yeni Stok Ekle
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group mb-4">
+                                    <label asp-for="StokAd" class="form-label fw-bold">
+                                        <i class="fas fa-box me-2"></i>Stok Adı
+                                    </label>
+                                    <input asp-for="StokAd" class="form-control form-control-lg" placeholder="Stok adını girin" />
+                                    <span asp-validation-for="StokAd" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-4">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-toggle-on me-2"></i>Durum
+                                    </label>
+                                    <div class="form-check form-switch form-switch-lg">
+                                        <input class="form-check-input" type="checkbox" asp-for="Statu" checked>
+                                        <label class="form-check-label fw-bold" asp-for="Statu">
+                                            Aktif
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="StokMarka" class="form-label fw-bold">
+                                        <i class="fas fa-tag me-2"></i>Marka
+                                    </label>
+                                    <input asp-for="StokMarka" class="form-control form-control-lg" placeholder="Marka adını girin" />
+                                    <span asp-validation-for="StokMarka" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="StokOlcuBirim" class="form-label fw-bold">
+                                        <i class="fas fa-ruler me-2"></i>Ölçü Birimi
+                                    </label>
+                                    <select asp-for="StokOlcuBirim" class="form-select form-select-lg" asp-items="ViewBag.StokOlcuBirim">
+                                        <option value="">-- Ölçü Birimi Seçiniz --</option>
+                                    </select>
+                                    <span asp-validation-for="StokOlcuBirim" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KayitMiktar" class="form-label fw-bold">
+                                        <i class="fas fa-balance-scale me-2"></i>Miktar
+                                    </label>
+                                    <input asp-for="KayitMiktar" class="form-control form-control-lg" type="number" step="0.01" min="0" placeholder="Miktar girin" />
+                                    <span asp-validation-for="KayitMiktar" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label asp-for="KayitTarihi" class="form-label fw-bold">
+                                        <i class="fas fa-calendar-alt me-2"></i>Kayıt Tarihi
+                                    </label>
+                                    <input asp-for="KayitTarihi" class="form-control form-control-lg" type="datetime-local" />
+                                    <span asp-validation-for="KayitTarihi" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="StokDetay" class="form-label fw-bold">
+                                <i class="fas fa-info-circle me-2"></i>Detay <small class="text-muted">(Opsiyonel)</small>
+                            </label>
+                            <textarea asp-for="StokDetay" class="form-control form-control-lg" rows="3" placeholder="Stok hakkında detay bilgi girebilirsiniz (opsiyonel)..."></textarea>
+                            <span asp-validation-for="StokDetay" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-success btn-lg me-3">
+                                    <i class="fas fa-plus me-2"></i>Stok Ekle
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-arrow-left me-2"></i>İptal
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    
+    <script>
+        $(document).ready(function() {
+            // Kayıt tarihini bugünün tarihi ile doldur
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = String(now.getMonth() + 1).padStart(2, '0');
+            var day = String(now.getDate()).padStart(2, '0');
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            var dateTimeLocal = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            $('#KayitTarihi').val(dateTimeLocal);
+        });
+    </script>
+}

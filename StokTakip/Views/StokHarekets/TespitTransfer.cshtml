@@ -1,0 +1,318 @@
+@{
+    ViewData["Title"] = "Tespit Transfer";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-exchange-alt text-warning"></i>
+                        Tespit Transfer
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Transfer Bilgileri -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-arrow-right text-primary"></i> Transfer Yönü</h6>
+                                <strong>Kaynak:</strong> @ViewBag.KaynakDepoEslestirme.AltDepo.AltDepoAdi<br>
+                                <strong>Hedef:</strong> @ViewBag.HedefDepoEslestirme.AltDepo.AltDepoAdi
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-info-circle text-warning"></i> Bilgi</h6>
+                                <small>Transfer işlemi FIFO algoritması ile yapılacaktır.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ürün Listesi -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5><i class="fas fa-boxes text-primary"></i> Kaynak Depodaki Ürünler</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="urunlerTablosu">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Ürün Adı</th>
+                                            <th>Marka</th>
+                                            <th>Mevcut Miktar</th>
+                                            <th>Transfer Miktarı</th>
+                                            <th>İşlem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var urun in ViewBag.Urunler)
+                                        {
+                                            <tr data-stok-id="@urun.StokId" data-depo-eslestirme-id="@ViewBag.KaynakDepoEslestirme.Id">
+                                                <td>@urun.Stok.StokAd</td>
+                                                <td>@urun.Stok.StokMarka</td>
+                                                <td>
+                                                    <span class="badge bg-info">@urun.DurumMiktar.ToString("N2")</span>
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control transfer-miktar" 
+                                                           min="0.01" max="@urun.DurumMiktar" step="0.01" 
+                                                           placeholder="Miktar girin" style="width: 120px;">
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-success btn-sm transfer-yap-btn" 
+                                                            onclick="transferYap(this)" 
+                                                            data-stok-id="@urun.StokId"
+                                                            data-depo-eslestirme-id="@ViewBag.KaynakDepoEslestirme.Id"
+                                                            data-hedef-depo-eslestirme-id="@ViewBag.HedefDepoEslestirme.Id"
+                                                            disabled>
+                                                        <i class="fas fa-exchange-alt"></i> Transfer
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Butonlar -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Vazgeç
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Sonuç Modal -->
+<div class="modal fade" id="transferSonucModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Transfer Sonucu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="transferSonucMesaj"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Tamam</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alt Depo Tespit Modal -->
+<div class="modal fade" id="altDepoTespitModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-search"></i>
+                    Alt Depo Tespiti
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div id="tespitIcerik"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Transfer miktarı değiştiğinde buton durumunu güncelle
+        $(document).on('input', '.transfer-miktar', function() {
+            var row = $(this).closest('tr');
+            var btn = row.find('.transfer-yap-btn');
+            var miktar = parseFloat($(this).val());
+            var maxMiktar = parseFloat($(this).attr('max'));
+            
+            if (miktar > 0 && miktar <= maxMiktar) {
+                btn.prop('disabled', false);
+            } else {
+                btn.prop('disabled', true);
+            }
+        });
+
+        // Transfer yap
+        function transferYap(btn) {
+            var row = $(btn).closest('tr');
+            var miktarInput = row.find('.transfer-miktar');
+            var miktar = parseFloat(miktarInput.val());
+            
+            if (!miktar || miktar <= 0) {
+                alert('Lütfen geçerli bir miktar girin.');
+                return;
+            }
+
+            var stokId = $(btn).data('stok-id');
+            var kaynakDepoEslestirmeId = $(btn).data('depo-eslestirme-id');
+            var hedefDepoEslestirmeId = $(btn).data('hedef-depo-eslestirme-id');
+
+            // Loading göster
+            $(btn).prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> İşleniyor...');
+
+            // AJAX ile transfer yap
+            $.ajax({
+                url: '@Url.Action("TespitTransferYap", "StokHarekets")',
+                type: 'POST',
+                data: {
+                    kaynakDepoEslestirmeId: kaynakDepoEslestirmeId,
+                    hedefDepoEslestirmeId: hedefDepoEslestirmeId,
+                    stokId: stokId,
+                    miktar: miktar,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Başarılı transfer
+                        var mesajHtml = `
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                <strong>Başarılı!</strong> ${response.message}
+                            </div>
+                        `;
+                        
+                        // Eğer minimum stok uyarısı varsa ekle
+                        if (response.uyari) {
+                            mesajHtml += `
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>⚠️ Minimum Stok Uyarısı!</strong> ${response.uyari}
+                                    <div class="mt-2">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(${response.altDepoId})">
+                                            🎯 Alt Depo Tespit Et
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="dismissAlert()">
+                                            ❌ Kapat
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        $('#transferSonucMesaj').html(mesajHtml);
+                        
+                        // Tabloyu güncelle
+                        var maxMiktar = parseFloat(miktarInput.attr('max'));
+                        var yeniMiktar = maxMiktar - miktar;
+                        
+                        if (yeniMiktar <= 0) {
+                            row.remove(); // Satırı kaldır
+                        } else {
+                            row.find('.badge').text(yeniMiktar.toFixed(2));
+                            miktarInput.attr('max', yeniMiktar.toFixed(2));
+                            miktarInput.val('');
+                        }
+                        
+                        // Buton durumunu sıfırla
+                        $(btn).prop('disabled', true).html('<i class="fas fa-exchange-alt"></i> Transfer');
+                        
+                    } else {
+                        // Hata
+                        $('#transferSonucMesaj').html(`
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Hata!</strong> ${response.message}
+                            </div>
+                        `);
+                        
+                        // Buton durumunu geri yükle
+                        $(btn).prop('disabled', false).html('<i class="fas fa-exchange-alt"></i> Transfer');
+                    }
+                    
+                    $('#transferSonucModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    // AJAX hatası - detaylı bilgi al
+                    var errorMessage = "Transfer sırasında bir hata oluştu.";
+                    
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.status === 500) {
+                        errorMessage = "Sunucu hatası oluştu. Lütfen tekrar deneyin.";
+                    } else if (xhr.status === 404) {
+                        errorMessage = "İstek bulunamadı. Lütfen sayfayı yenileyin.";
+                    }
+                    
+                    $('#transferSonucMesaj').html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Hata!</strong> ${errorMessage}
+                        </div>
+                    `);
+                    
+                    $('#transferSonucModal').modal('show');
+                    
+                    // Buton durumunu geri yükle
+                    $(btn).prop('disabled', false).html('<i class="fas fa-exchange-alt"></i> Transfer');
+                    
+                    // Konsola hata detayını yaz
+                    console.error('Transfer Error:', {xhr: xhr, status: status, error: error});
+                }
+            });
+        }
+        
+        // Alt depo tespit et
+        function tespitEtAltDepo(mevcutAltDepoId) {
+            $('#transferSonucModal').modal('hide');
+            
+            $.ajax({
+                url: '@Url.Action("TespitEtAltDepo", "StokHarekets")',
+                type: 'GET',
+                data: { mevcutAltDepoId: mevcutAltDepoId },
+                success: function(response) {
+                    if (response.success) {
+                        gosterAltDepoTespit(response.altDepo, mevcutAltDepoId);
+                    } else {
+                        alert('Uygun alt depo bulunamadı: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Alt depo tespiti yapılamadı.');
+                }
+            });
+        }
+        
+        // Alt depo tespit sonucunu göster
+        function gosterAltDepoTespit(altDepo, mevcutAltDepoId) {
+            var tespitHtml = `
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-search text-info"></i> Tespit Sonucu</h6>
+                    <p><strong>${altDepo.adi}</strong> alt deposunun stok miktarı fazla gözüküyor.</p>
+                    <p class="mb-0"><strong>ORADAN BURAYA TRANSFER İŞLEMİ YAPMAK İSTER MİSİN?</strong></p>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-success btn-lg me-3" onclick="transferiYap(${altDepo.id}, ${mevcutAltDepoId})">
+                        <i class="fas fa-exchange-alt"></i> TRANSFERİ YAP
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> HAYIR
+                    </button>
+                </div>
+            `;
+            
+            $('#tespitIcerik').html(tespitHtml);
+            $('#altDepoTespitModal').modal('show');
+        }
+        
+        // Transfer sayfasını aç
+        function transferiYap(kaynakAltDepoId, hedefAltDepoId) {
+            $('#altDepoTespitModal').modal('hide');
+            window.location.href = '@Url.Action("TespitTransfer", "StokHarekets")?kaynakAltDepoId=' + kaynakAltDepoId + '&hedefAltDepoId=' + hedefAltDepoId;
+        }
+        
+        // Uyarıyı kapat
+        function dismissAlert() {
+            $('.alert').fadeOut();
+        }
+    </script>
+}

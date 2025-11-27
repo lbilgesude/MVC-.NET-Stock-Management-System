@@ -1,0 +1,50 @@
+﻿@model StokTakip.Models.StokDurum
+
+@{
+    ViewData["Title"] = "Stok Miktarını Düzelt";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h4 class="mb-0">Stok Miktarını Düzelt</h4>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    @* StokId, DepoEslestirmeId gibi anahtar alanların ve sistem alanlarının değişmemesi için
+                       gizli (hidden) olarak forma eklenmesi önemlidir. *@
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="StokId" />
+                    <input type="hidden" asp-for="DepoEslestirmeId" />
+                    <input type="hidden" asp-for="OlusturmaTarihi" />
+                    <input type="hidden" asp-for="OlusturanKullanici" />
+
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Düzenlenen Kayıt</h5>
+                        <p class="mb-0"><strong>Ürün:</strong> @ViewBag.StokAdi</p>
+                        <p class="mb-0"><strong>Depo:</strong> @ViewBag.DepoAdi</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DurumMiktar" class="form-label">Yeni Miktar</label>
+                        <input asp-for="DurumMiktar" class="form-control" />
+                        <span asp-validation-for="DurumMiktar" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <input type="submit" value="Kaydet" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

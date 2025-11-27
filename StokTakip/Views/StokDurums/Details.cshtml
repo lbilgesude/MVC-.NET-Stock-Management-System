@@ -1,0 +1,165 @@
+﻿@model StokTakip.Models.StokDurum
+
+@{
+    ViewData["Title"] = "Stok Durum Detayları";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Stok Durum Detayları
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Sol Kolon - Stok Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Stok Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ürün:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info fs-6">@(Model.Stok?.StokAd ?? "Belirtilmemiş")</span>
+                                            @if (!string.IsNullOrEmpty(Model.Stok?.StokMarka))
+                                            {
+                                                <span class="badge bg-secondary ms-2">@Model.Stok.StokMarka</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ölçü Birimi:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-primary fs-6">
+                                                @(Model.Stok?.StokOlcuBirimNavigation?.OlcuBirimAdi ?? "Belirtilmemiş")
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Durum Miktarı:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-success fs-5">@Model.DurumMiktar</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Kolon - Depo Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-warehouse me-2"></i>Depo Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ana Depo:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-warning text-dark fs-6">
+                                                @(Model.DepoEslestirme?.Depo?.DepoAdi ?? "Belirtilmemiş")
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Alt Depo:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info text-dark fs-6">
+                                                @(Model.DepoEslestirme?.AltDepo?.AltDepoAdi ?? "Belirtilmemiş")
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Minimum Stok:</div>
+                                        <div class="col-sm-8">
+                                            <span class="text-muted">Belirtilmemiş</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sistem Bilgileri -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-secondary">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Sistem Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-4 fw-bold">Oluşturma Tarihi:</div>
+                                                <div class="col-sm-8">
+                                                    <i class="fas fa-calendar-alt me-2"></i>
+                                                    @Model.OlusturmaTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Belirtilmemiş"
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-4 fw-bold">Güncelleme Tarihi:</div>
+                                                <div class="col-sm-8">
+                                                    <i class="fas fa-calendar-alt me-2"></i>
+                                                    @Model.GuncellemeTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Güncellenmemiş"
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="row mb-3">
+                                                <div class="col-sm-4 fw-bold">Oluşturan Kullanıcı:</div>
+                                                <div class="col-sm-8">
+                                                    <i class="fas fa-user me-2"></i>
+                                                    @(Model.OlusturanKullaniciNavigation != null ? $"{Model.OlusturanKullaniciNavigation.KulAd} {Model.OlusturanKullaniciNavigation.KulSoyad}" : "Belirtilmemiş")
+                                                </div>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-sm-4 fw-bold">Güncelleyen Kullanıcı:</div>
+                                                <div class="col-sm-8">
+                                                    <i class="fas fa-user-edit me-2"></i>
+                                                    @(Model.GuncelleyenKullaniciNavigation != null ? $"{Model.GuncelleyenKullaniciNavigation.KulAd} {Model.GuncelleyenKullaniciNavigation.KulSoyad}" : "Güncellenmemiş")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Listeye Dön
+                            </a>
+                        </div>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa yüklendiğinde animasyonlar
+        $(document).ready(function() {
+            $('.card').hide().fadeIn(500);
+            $('.badge').hide().fadeIn(800);
+        });
+    </script>
+}

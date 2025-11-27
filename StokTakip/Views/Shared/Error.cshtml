@@ -1,0 +1,57 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Hata";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Hata Oluştu
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <h2 class="text-danger mb-4">İsteğiniz işlenirken bir hata oluştu.</h2>
+                    
+                    @if (Model.ShowErrorMessage)
+                    {
+                        <div class="alert alert-danger">
+                            <h5><i class="fas fa-info-circle"></i> Hata Mesajı:</h5>
+                            <p class="mb-0">@Model.ErrorMessage</p>
+                        </div>
+                    }
+                    
+                    @if (Model.ShowRequestId)
+                    {
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-bug"></i> İstek ID:</h6>
+                            <code>@Model.RequestId</code>
+                        </div>
+                    }
+                    
+                    @if (Model.ShowErrorDetails)
+                    {
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-code"></i> Detaylı Hata Bilgisi:</h6>
+                            <pre class="mb-0" style="white-space: pre-wrap; font-size: 0.9em;">@Model.ErrorDetails</pre>
+                        </div>
+                    }
+                    
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="fas fa-home"></i>
+                            Ana Sayfaya Dön
+                        </a>
+                        <button onclick="history.back()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Geri Dön
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

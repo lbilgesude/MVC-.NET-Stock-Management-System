@@ -1,0 +1,331 @@
+﻿@model IEnumerable<StokTakip.Models.StokHareket>
+
+@{
+    ViewData["Title"] = "Stok Hareket Raporu";
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<!-- Arama ve Filtre Bölümü -->
+<div class="search-section">
+    <form method="get" class="search-form">
+        <div class="search-row">
+            <div class="search-group">
+                <label class="search-label">Stok Adı</label>
+                <input type="text" name="searchString" class="search-input" placeholder="Stok adı, hareket tipi, sorumlu..." value="@Context.Request.Query["searchString"]" />
+            </div>
+            <div class="search-group">
+                <label class="search-label">Başlangıç Tarihi</label>
+                <input type="date" name="baslangicTarihi" class="search-input" value="@Context.Request.Query["baslangicTarihi"]" />
+            </div>
+            <div class="search-group">
+                <label class="search-label">Bitiş Tarihi</label>
+                <input type="date" name="bitisTarihi" class="search-input" value="@Context.Request.Query["bitisTarihi"]" />
+            </div>
+            <div class="search-buttons">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    Ara
+                </button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">
+                    <i class="fas fa-times"></i>
+                    Temizle
+                </a>
+                <a href="@Url.Action("ExportToExcel", "Rapor")" class="btn btn-success">
+                    <i class="fas fa-file-excel"></i>
+                    Excel'e Aktar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Veri Tablosu -->
+<div class="data-table-container">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="min-width: 200px;">Stok Bilgileri</th>
+                        <th style="min-width: 120px;">Hareket Tipi</th>
+                        <th style="min-width: 100px; text-align: center;">Miktar</th>
+                        <th style="min-width: 150px;">Depo Bilgileri</th>
+                        <th style="min-width: 120px;">Sorumlu</th>
+                        <th style="min-width: 120px;">Tarih</th>
+                        <th style="min-width: 150px; text-align: center;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="product-info">
+                                    <div class="product-name">@(item.Stok?.StokAd ?? "Belirtilmemiş")</div>
+                                    <div class="product-code">ID: @item.Id</div>
+                                    <div class="product-detail">@(item.Aciklama ?? "Açıklama yok")</div>
+                                </div>
+                            </td>
+                            <td>
+                                @{
+                                    var hareketTipClass = item.HareketTipNavigation?.HareketTipAdi switch
+                                    {
+                                        "Giriş" => "badge-success",
+                                        "Çıkış" => "badge-danger",
+                                        "Transfer" => "badge-info",
+                                        _ => "badge-secondary"
+                                    };
+                                }
+                                <span class="badge @hareketTipClass">
+                                    <i class="fas fa-@(item.HareketTipNavigation?.HareketTipAdi == "Giriş" ? "arrow-down" : 
+                                                      item.HareketTipNavigation?.HareketTipAdi == "Çıkış" ? "arrow-up" : 
+                                                      "exchange-alt")"></i>
+                                    @(item.HareketTipNavigation?.HareketTipAdi ?? "Belirtilmemiş")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="quantity-display">
+                                    <span class="quantity-number">@item.HareketMiktar.ToString("N2")</span>
+                                    <span class="quantity-unit">@(item.Stok?.StokOlcuBirimNavigation?.OlcuBirimAdi ?? "Birim")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="depo-info">
+                                    <div class="depo-main">
+                                        <i class="fas fa-warehouse text-primary"></i>
+                                        <span class="depo-name">@(item.DepoEslestirme?.Depo?.DepoAdi ?? "Belirtilmemiş")</span>
+                                    </div>
+                                    @if (item.DepoEslestirme?.AltDepo != null)
+                                    {
+                                        <div class="subdepo-info">
+                                            <i class="fas fa-box text-secondary"></i>
+                                            <span class="subdepo-name">@item.DepoEslestirme?.AltDepo?.AltDepoAdi</span>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-info">
+                                    <i class="fas fa-user text-info"></i>
+                                    <span class="user-name">@(item.Sorumlu?.SorumluAdi ?? "Belirtilmemiş")</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <div class="date-main">@item.HareketTarihi.ToString("dd.MM.yyyy")</div>
+                                    <div class="date-time">@item.HareketTarihi.ToString("HH:mm")</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("Details", "StokHarekets", new { id = item.Id })" class="btn btn-sm btn-info" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "StokHarekets", new { id = item.Id })" class="btn btn-sm btn-warning" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", "StokHarekets", new { id = item.Id })" class="btn btn-sm btn-danger" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Özet Bilgiler -->
+        <div class="table-summary">
+            <div class="summary-item">
+                <i class="fas fa-list text-primary"></i>
+                <span class="summary-label">Toplam Hareket:</span>
+                <span class="summary-value">@Model.Count()</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-down text-success"></i>
+                <span class="summary-label">Giriş:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Giriş")</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-up text-danger"></i>
+                <span class="summary-label">Çıkış:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Çıkış")</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-exchange-alt text-info"></i>
+                <span class="summary-label">Transfer:</span>
+                <span class="summary-value">@Model.Count(x => x.HareketTipNavigation?.HareketTipAdi == "Transfer")</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3 class="empty-state-title">Hareket Bulunamadı</h3>
+            <p class="empty-state-message">Arama kriterlerinize uygun stok hareketi bulunamadı. Farklı arama terimleri deneyin.</p>
+            <div class="empty-state-actions">
+                <a href="@Url.Action("GrafikselRaporlar")" class="btn btn-primary">
+                    <i class="fas fa-chart-line"></i>
+                    Grafiksel Raporlar
+                </a>
+                <a href="@Url.Action("Istatistikler")" class="btn btn-info">
+                    <i class="fas fa-chart-pie"></i>
+                    İstatistikler
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+/* Rapor Sayfası Özel Stilleri */
+.product-detail {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 0.25rem;
+}
+
+.quantity-unit {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.date-main {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.date-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.empty-state-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.empty-state-actions .btn {
+    min-width: 140px;
+}
+
+/* Responsive Tasarım */
+@@media (max-width: 1024px) {
+    .search-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-group {
+        min-width: auto;
+    }
+    
+    .search-buttons {
+        justify-content: stretch;
+    }
+    
+    .search-buttons .btn {
+        flex: 1;
+    }
+    
+    .table-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .summary-item {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .empty-state-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@@media (max-width: 768px) {
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 1rem 0.75rem;
+    }
+    
+    .product-name {
+        font-size: 0.9rem;
+    }
+    
+    .quantity-number {
+        font-size: 1.1rem;
+    }
+    
+    .action-buttons .btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+}
+
+@@media (max-width: 480px) {
+    .search-section {
+        padding: 1rem;
+    }
+    
+    .data-table-container {
+        margin: 1rem 0;
+    }
+    
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .product-name {
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        height: 35px;
+    }
+}
+</style>
+

@@ -1,0 +1,159 @@
+﻿@model StokTakip.Models.StokHareket
+
+@{
+    ViewData["Title"] = "Stok Girişi";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-plus-circle"></i>
+                        @ViewData["Title"]
+                    </h4>
+                </div>
+                <div class="card-body">
+                        <form asp-action="Giris" class="modern-form">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-info-circle"></i>
+                                    Temel Bilgiler
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-tag"></i>
+                                                Hareket Tipi
+                                            </label>
+                                            <select asp-for="HareketTip" class="form-control" asp-items="ViewBag.HareketTip">
+                                                <option value="">-- Hareket Tipi Seçiniz --</option>
+                                            </select>
+                                            <span asp-validation-for="HareketTip" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-box"></i>
+                                                Ürün Adı
+                                            </label>
+                                            <input type="text" name="urunAdi" class="form-control" placeholder="Ürün adını girin" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-trademark"></i>
+                                                Ürün Markası
+                                            </label>
+                                            <input type="text" name="urunMarka" class="form-control" placeholder="Ürün markasını girin" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-ruler"></i>
+                                                Ölçü Birimi
+                                            </label>
+                                            <select name="olcuBirimiId" class="form-control" asp-items="ViewBag.OlcuBirimiId">
+                                                <option value="">-- Ölçü Birimi Seçiniz --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-warehouse"></i>
+                                    Depo ve Miktar Bilgileri
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                Yerleştirilecek Depo
+                                            </label>
+                                            <select asp-for="DepoEslestirmeId" class="form-control" asp-items="ViewBag.DepoEslestirmeId">
+                                                <option value="">-- Depo Seçiniz --</option>
+                                            </select>
+                                            <span asp-validation-for="DepoEslestirmeId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="HareketMiktar" class="form-label">
+                                                <i class="fas fa-calculator"></i>
+                                                Miktar
+                                            </label>
+                                            <input asp-for="HareketMiktar" class="form-control" type="number" step="any" placeholder="Miktar girin" />
+                                            <span asp-validation-for="HareketMiktar" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4 class="section-title">
+                                    <i class="fas fa-user"></i>
+                                    Sorumlu ve Açıklama
+                                </h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="SorumluId" class="form-label">
+                                                <i class="fas fa-user-tie"></i>
+                                                Sorumlu
+                                            </label>
+                                            <select asp-for="SorumluId" class="form-control" asp-items="ViewBag.SorumluId">
+                                                <option value="">-- Sorumlu Seçiniz --</option>
+                                            </select>
+                                            <span asp-validation-for="SorumluId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="Aciklama" class="form-label">
+                                                <i class="fas fa-comment"></i>
+                                                Açıklama
+                                            </label>
+                                            <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Açıklama girin (opsiyonel)"></textarea>
+                                            <span asp-validation-for="Aciklama" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus-circle"></i>
+                                    Stok Girişi Yap
+                                </button>
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-outline btn-lg">
+                                    <i class="fas fa-times"></i>
+                                    İptal
+                                </a>
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

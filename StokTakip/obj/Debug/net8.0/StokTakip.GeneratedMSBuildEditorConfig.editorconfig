@@ -1,0 +1,321 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = StokTakip
+build_property.RootNamespace = StokTakip
+build_property.ProjectDir = C:\Users\bilge\source\repos\StokTakip\StokTakip\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\bilge\source\repos\StokTakip\StokTakip
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/AltDepoes/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx0RGVwb2VzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/AltDepoes/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx0RGVwb2VzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/AltDepoes/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx0RGVwb2VzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/AltDepoes/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx0RGVwb2VzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/AltDepoes/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWx0RGVwb2VzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/DepoEslestirmes/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb0VzbGVzdGlybWVzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/DepoEslestirmes/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb0VzbGVzdGlybWVzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/DepoEslestirmes/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb0VzbGVzdGlybWVzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/DepoEslestirmes/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb0VzbGVzdGlybWVzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/DepoEslestirmes/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb0VzbGVzdGlybWVzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Depoes/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb2VzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Depoes/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb2VzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Depoes/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb2VzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Depoes/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb2VzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Depoes/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGVwb2VzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/HareketTips/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGFyZWtldFRpcHNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/HareketTips/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGFyZWtldFRpcHNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/HareketTips/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGFyZWtldFRpcHNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/HareketTips/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGFyZWtldFRpcHNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/HareketTips/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSGFyZWtldFRpcHNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Hareketler.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xIYXJla2V0bGVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Kullanicis/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/KullaniciTips/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpVGlwc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/KullaniciTips/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpVGlwc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/KullaniciTips/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpVGlwc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/KullaniciTips/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpVGlwc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/KullaniciTips/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcS3VsbGFuaWNpVGlwc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/OlcuBirimis/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2xjdUJpcmltaXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/OlcuBirimis/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2xjdUJpcmltaXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/OlcuBirimis/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2xjdUJpcmltaXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/OlcuBirimis/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2xjdUJpcmltaXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/OlcuBirimis/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2xjdUJpcmltaXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Rapor/GrafikselRaporlar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFwb3JcR3JhZmlrc2VsUmFwb3JsYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Rapor/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFwb3JcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Rapor/Istatistikler.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmFwb3JcSXN0YXRpc3Rpa2xlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Shared/_ModernLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9Nb2Rlcm5MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Sorumlus/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU29ydW1sdXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Sorumlus/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU29ydW1sdXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Sorumlus/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU29ydW1sdXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Sorumlus/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU29ydW1sdXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Sorumlus/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU29ydW1sdXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokDurums/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0R1cnVtc1xDcmVhdGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokDurums/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0R1cnVtc1xEZWxldGUuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokDurums/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0R1cnVtc1xEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokDurums/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0R1cnVtc1xFZGl0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokDurums/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0R1cnVtc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Cikis.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXENpa2lzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXERlbGV0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Giris.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXEdpcmlzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/TespitTransfer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXFRlc3BpdFRyYW5zZmVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/StokHarekets/Transfer.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva0hhcmVrZXRzXFRyYW5zZmVyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Stoks/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva3NcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Stoks/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva3NcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Stoks/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva3NcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Stoks/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva3NcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Stoks/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Rva3NcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Test/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVGVzdFxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bilge/source/repos/StokTakip/StokTakip/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-4kzpame6jw

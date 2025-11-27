@@ -1,0 +1,1286 @@
+﻿@model StokTakip.Models.HomeViewModel
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+@if (TempData["MinimumStokUyarisi"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>⚠️ Minimum Stok Uyarısı!</strong> @TempData["MinimumStokUyarisi"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="mt-2">
+            <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(@TempData["AltDepoId"])">
+                🎯 Alt Depo Tespit Et
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="dismissAlert()">
+                ❌ Kapat
+            </button>
+        </div>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>✅ Başarılı!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="dashboard-header">
+    <div class="welcome-section">
+        <h1 class="welcome-title">Hoş Geldiniz!</h1>
+        <p class="welcome-subtitle">Stok Takip Sistemi'ne hoş geldiniz. Güncel durumu görüntüleyin ve hızlı işlemler yapın.</p>
+    </div>
+    <div class="quick-actions">
+        <a href="@Url.Action("Giris", "StokHarekets")" class="btn btn-success">
+            <i class="fas fa-arrow-down"></i>
+            Stok Girişi
+        </a>
+        <a href="@Url.Action("Cikis", "StokHarekets")" class="btn btn-warning">
+            <i class="fas fa-arrow-up"></i>
+            Stok Çıkışı
+        </a>
+        <a href="@Url.Action("Transfer", "StokHarekets")" class="btn btn-info">
+            <i class="fas fa-exchange-alt"></i>
+            Transfer
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-boxes"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">@Model.ToplamStokAdedi.ToString("N0")</div>
+            <div class="stat-label">Toplam Stok Miktarı</div>
+            <div class="stat-sublabel">@Model.ToplamStokKartiSayisi stok kartı</div>
+        
+        <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+12%</span>
+        </div></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-warehouse"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">@Model.ToplamAnaDepoSayisi</div>
+            <div class="stat-label">Toplam Depo</div>
+       
+        <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+5%</span>
+        </div> </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">@Model.ToplamKullaniciSayisi</div>
+            <div class="stat-label">Toplam Kullanıcı</div>
+        
+        <div class="stat-trend neutral">
+            <i class="fas fa-minus"></i>
+            <span>0%</span>
+        </div></div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number">@Model.SonStokHareketleri.Count()</div>
+            <div class="stat-label">Bu Ay Hareket</div>
+        
+        <div class="stat-trend positive">
+            <i class="fas fa-arrow-up"></i>
+            <span>+18%</span>
+        </div></div>
+    </div>
+</div>
+
+<div class="content-row">
+    <div class="recent-activities">
+        <div class="content-card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-clock"></i>
+                    Son 10 Stok Hareketi
+                </h3>
+            </div>
+            <div class="card-body">
+                @if (Model.SonStokHareketleri != null && Model.SonStokHareketleri.Any())
+                {
+                    <div class="activity-list">
+                        @foreach (var hareket in Model.SonStokHareketleri.Take(10))
+                        {
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="text-dark @GetActivityIcon(hareket.HareketTip)"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title">
+                                        @GetActivityTypeText(hareket.HareketTip) - @(hareket.Stok?.StokAd ?? "N/A")
+                                    </div>
+                                    <div class="activity-details">
+                                        <span class="activity-amount">@hareket.HareketMiktar @(hareket.Stok?.StokOlcuBirimNavigation?.OlcuBirimAdi ?? "")</span>
+                                        <span class="activity-location">@(hareket.DepoEslestirme?.Depo?.DepoAdi ?? "N/A")</span>
+                                    </div>
+                                    <div class="activity-time">@hareket.HareketTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                </div>
+                                <div class="activity-badge">
+                                    <span class="@GetActivityBadgeClass(hareket.HareketTip)">
+                                        @GetActivityTypeText(hareket.HareketTip)
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Henüz stok hareketi bulunmuyor</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="minimum-stok-uyarilari">
+        <div class="content-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">
+                    <i class="fas fa-bell text-warning"></i>
+                    Sistem Uyarıları
+                    <span id="uyariSayisi" class="uyari-sayisi" style="display: none;">0</span>
+                </h3>
+                <button id="tumunuOkunduBtn" type="button" class="btn btn-sm btn-primary" onclick="markAllAsRead()" style="display: none;">
+                    <i class="fas fa-check-double"></i> Tümünü Okundu İşaretle
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="uyariListesi">
+                    <!-- Uyarılar buraya dinamik olarak yüklenecek -->
+                </div>
+                
+                <!-- Model'den gelen statik uyarılar (varsa) -->
+                @if (Model.Uyarilar != null && Model.Uyarilar.Any())
+                {
+                    <div class="statik-uyarilar" style="margin-top: 1rem;">
+                        <h6 class="text-muted mb-3">
+                            <i class="fas fa-info-circle"></i>
+                            Sistem Bildirimleri
+                        </h6>
+                        <div class="uyari-listesi">
+                            @foreach (var uyari in Model.Uyarilar)
+                            {
+                                @if (uyari.Baslik != null && uyari.Baslik.Contains("Minimum Stok Uyarısı"))
+                                {
+                                    // Minimum stok uyarısı için özel alert formatı
+                                    var altDepoId = uyari.Mesaj.Contains("ALTDEPO_ID:") ? uyari.Mesaj.Split("ALTDEPO_ID:")[1] : "0";
+                                    var temizMesaj = uyari.Mesaj.Replace(" ALTDEPO_ID:" + altDepoId, ""); // ID'yi mesajdan temizle
+                                    
+                                    <div class="alert alert-warning fade show" role="alert" data-uyari-id="@uyari.Id" data-alt-depo-id="@altDepoId">
+                                        <strong>@uyari.Baslik</strong>
+                                        <p class="mb-2">@Html.Raw(temizMesaj)</p>
+                                        <p class="mb-3"><strong>İSTERSEN BAŞKA BİR DEPODAN TRANSFER GİRİŞİ ALMAK İÇİN ALT DEPO TESPİTİ YAPABİLİRİM</strong></p>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(@altDepoId)">
+                                                🎯 Alt Depo Tespit Et
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="silUyari(@uyari.Id)">
+                                                🗑️ Sil
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    // Diğer uyarılar için normal format
+                                    <div class="uyari-item @(uyari.Okundu ? "okundu" : "")" data-uyari-id="@uyari.Id">
+                                        <div class="uyari-icon">
+                                            <i class="@GetUyariIcon(uyari.Tip)"></i>
+                                        </div>
+                                        <div class="uyari-content">
+                                            <div class="uyari-baslik">@uyari.Baslik</div>
+                                            <div class="uyari-mesaj">@uyari.Mesaj</div>
+                                            <div class="uyari-tarih">@uyari.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                                        </div>
+                                        <div class="uyari-actions">
+                                            @if (!string.IsNullOrEmpty(uyari.AksiyonUrl))
+                                            {
+                                                <a href="@uyari.AksiyonUrl" class="btn btn-sm btn-primary">
+                                                    @(uyari.AksiyonText ?? "İşlem Yap")
+                                                </a>
+                                            }
+                                            <button type="button" class="btn btn-sm btn-success" onclick="markAsRead(@uyari.Id)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetActivityIcon(int hareketTip)
+    {
+        return hareketTip switch
+        {
+            1 => "fas fa-arrow-down",
+            2 => "fas fa-exchange-alt",
+            _ => "fa-solid fa-truck"
+        };
+    }
+
+    private string GetActivityIconClass(int hareketTip)
+    {
+        return hareketTip switch
+        {
+            1 => "icon-success",
+            2 => "icon-info",
+            _ => "icon-secondary"
+        };
+    }
+
+    private string GetActivityTypeText(int hareketTip)
+    {
+        return hareketTip switch
+        {
+            1 => "Giriş",
+            2 => "Transfer",
+            _ => "Diğer"
+        };
+    }
+
+    private string GetActivityBadgeClass(int hareketTip)
+    {
+        return hareketTip switch
+        {
+            1 => "badge-success",
+            2 => "badge-info",
+            _ => "badge-secondary"
+        };
+    }
+
+    private string GetUyariIcon(StokTakip.Models.UyariTipi tip)
+    {
+        return tip switch
+        {
+            StokTakip.Models.UyariTipi.Bilgi => "fas fa-info-circle text-info",
+            StokTakip.Models.UyariTipi.Uyari => "fas fa-exclamation-triangle text-warning",
+            StokTakip.Models.UyariTipi.Hata => "fas fa-times-circle text-danger",
+            StokTakip.Models.UyariTipi.Basarili => "fas fa-check-circle text-success",
+            _ => "fas fa-bell text-secondary"
+        };
+    }
+}
+
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+        color: white;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+        color: white;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .quick-actions .btn {
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .quick-actions .btn:hover {
+        transform: translateY(-2px);
+        color: white !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-icon {
+        min-width: 60px;
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    }
+
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .stat-sublabel {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 400;
+        margin-top: 0.25rem;
+    }
+
+    .stat-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .stat-trend.positive {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+    }
+
+    .stat-trend.negative {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+    }
+
+    .stat-trend.neutral {
+        background: rgba(100, 116, 139, 0.1);
+        color: var(--secondary-color);
+    }
+
+    .content-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .card-title {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+        background: #f1f5f9;
+        transform: translateX(4px);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: white;
+    }
+
+    .icon-success {
+        background: var(--success-color);
+    }
+
+    .icon-info {
+        background: var(--info-color);
+    }
+
+    .icon-secondary {
+        background: var(--secondary-color);
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+        font-size: 0.95rem;
+    }
+
+    .activity-details {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    .activity-type {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    .badge-secondary { background: #f1f5f9; color: #475569; }
+
+    .activity-amount, .activity-location {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .activity-time {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    .quick-stats .quick-stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .quick-stats .quick-stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .stat-info .stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-info .stat-value {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.9rem;
+    }
+
+    .stat-percentage {
+        font-weight: 700;
+        color: #10b981;
+        font-size: 1.1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #94a3b8;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    /* Minimum stok uyarıları kartı */
+    .minimum-stok-uyarilari {
+        /* Normal grid item olarak kalacak */
+    }
+
+    .uyari-sayisi {
+        background: #fbbf24;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+
+    
+    .statik-uyarilar {
+        border-top: 1px solid #e9ecef;
+        padding-top: 1rem;
+    }
+    
+    /* Tespit transfer uyarıları için özel stiller */
+    .alert-info {
+        border-left: 4px solid #17a2b8;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #ffc107;
+    }
+
+    /* Minimum stok uyarıları kartındaki alert stilleri */
+    .minimum-stok-uyarilari .alert {
+        margin-bottom: 1rem;
+        border: 1px solid #fbbf24;
+        border-radius: 8px;
+    }
+
+    .minimum-stok-uyarilari .alert:last-child {
+        margin-bottom: 0;
+    }
+
+    .minimum-stok-uyarilari .alert p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .minimum-stok-uyarilari .alert .d-flex {
+        margin-top: 0.75rem;
+    }
+
+    .minimum-stok-uyarilari .alert .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .uyari-bos {
+        text-align: center;
+        padding: 2rem;
+        color: #10b981;
+    }
+
+    .uyari-bos i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    /* Mobile Responsive */
+    @@media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .content-row {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .quick-actions {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>
+
+<!-- Minimum Stok Uyarıları Modal -->
+<div class="modal fade" id="minimumStokModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Stok Uyarısı
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div id="uyariIcerik"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alt Depo Tespit Modal -->
+<div class="modal fade" id="altDepoTespitModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-search"></i>
+                    Alt Depo Tespiti
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div id="tespitIcerik"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transfer Onay Modal -->
+<div class="modal fade" id="transferOnayModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exchange-alt"></i>
+                    Transfer Onayı
+                </h5>
+            </div>
+            <div class="modal-body">
+                <div id="transferOnayIcerik"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sayfa yüklendiğinde minimum stok kontrolü yap
+    $(document).ready(function() {
+        // Uyarıları yükle
+        yukleUyarilar();
+        
+        // Her 30 saniyede bir uyarıları yenile
+        setInterval(yukleUyarilar, 30000);
+        
+        // Sayfa görünür olduğunda uyarıları yenile
+        $(document).on('visibilitychange', function() {
+            if (!document.hidden) {
+                yukleUyarilar();
+            }
+        });
+    });
+
+    // Minimum stok kontrolü
+    function kontrolMinimumStok() {
+        $.ajax({
+            url: '@Url.Action("GetMinimumStokUyarilari", "StokHarekets")',
+            type: 'GET',
+            success: function(response) {
+                if (response.success && response.uyarilar && response.uyarilar.length > 0) {
+                    // İlk uyarıyı göster
+                    var uyari = response.uyarilar[0];
+                    gosterMinimumStokUyarisi(uyari);
+                }
+            },
+            error: function() {
+                console.log('Minimum stok kontrolü yapılamadı.');
+            }
+        });
+    }
+
+    // TempData'dan gelen uyarıyı kontrol et
+    @if (TempData["MinimumStokUyarisi"] != null)
+    {
+        <text>
+        $(document).ready(function() {
+            setTimeout(function() {
+                // Yukarıdan düşen uyarıyı göster
+                var uyariHtml = `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>⚠️ Minimum Stok Uyarısı!</strong> @TempData["MinimumStokUyarisi"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(@TempData["AltDepoId"])">
+                                🎯 Alt Depo Tespit Et
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="dismissAlert()">
+                                ❌ Kapat
+                            </button>
+                        </div>
+                    </div>
+                `;
+                $('.dashboard-header').after(uyariHtml);
+                
+                // Aynı uyarıyı minimum stok uyarıları kartına da ekle (birebir aynı içerik)
+                var kartUyariHtml = `
+                    <div class="alert alert-warning fade show" role="alert">
+                        <strong>⚠️ Minimum Stok Uyarısı!</strong> @TempData["MinimumStokUyarisi"]
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(@TempData["AltDepoId"])">
+                                🎯 Alt Depo Tespit Et
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="iptalEtUyari(this)">
+                                ❌ İptal Et
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Eğer kartta boş mesaj varsa kaldır
+                if ($('#uyariListesi .uyari-bos').length > 0) {
+                    $('#uyariListesi').html('');
+                }
+                
+                // Uyarıyı karta ekle
+                $('#uyariListesi').append(kartUyariHtml);
+                
+                // Uyarı sayısını güncelle
+                var uyariSayisi = $('#uyariListesi .alert').length;
+                $('#uyariSayisi').text(uyariSayisi);
+                
+            }, 500);
+        });
+        </text>
+    }
+
+    // Minimum stok uyarısını göster
+    function gosterMinimumStokUyarisi(uyari) {
+        var uyariHtml = `
+            <div class="alert alert-warning">
+                <h6><i class="fas fa-exclamation-triangle text-warning"></i> Dikkat!</h6>
+                <p><strong>${uyari.DepoEslestirme.AltDepo.AltDepoAdi}</strong> alt deposunda <strong>${uyari.Stok.StokAd}</strong> ürününün stok miktarı azalıyor.</p>
+                <p><strong>Mevcut Miktar:</strong> ${uyari.DurumMiktar}</p>
+                <p class="mb-0"><strong>İSTERSEN BAŞKA BİR DEPODAN TRANSFER GİRİŞİ ALMAK İÇİN ALT DEPO TESPİTİ YAPABİLİRİM</strong></p>
+            </div>
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-success btn-lg me-3" onclick="tespitEtAltDepo(${uyari.DepoEslestirme.AltDepo.Id})">
+                    <i class="fas fa-search"></i> TESPİT ET
+                </button>
+                <button type="button" class="btn btn-secondary btn-lg" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> HAYIR İSTEMİYORUM
+                </button>
+            </div>
+        `;
+        
+        $('#uyariIcerik').html(uyariHtml);
+        $('#minimumStokModal').modal('show');
+    }
+
+    // Alt depo tespit et
+    function tespitEtAltDepo(mevcutAltDepoId) {
+        $('#minimumStokModal').modal('hide');
+        
+        $.ajax({
+            url: '@Url.Action("TespitEtAltDepo", "StokHarekets")',
+            type: 'GET',
+            data: { mevcutAltDepoId: mevcutAltDepoId },
+            success: function(response) {
+                if (response.success) {
+                    gosterAltDepoTespit(response.altDepo, mevcutAltDepoId);
+                } else {
+                    alert('Uygun alt depo bulunamadı: ' + response.message);
+                }
+            },
+            error: function() {
+                alert('Alt depo tespiti yapılamadı.');
+            }
+        });
+    }
+
+    // Alt depo tespit sonucunu göster
+    function gosterAltDepoTespit(altDepo, mevcutAltDepoId) {
+        var tespitHtml = `
+            <div class="alert alert-info">
+                <h6><i class="fas fa-search text-info"></i> Tespit Sonucu</h6>
+                <p><strong>${altDepo.adi}</strong> alt deposunun stok miktarı fazla gözüküyor.</p>
+                <p class="mb-0"><strong>ORADAN BURAYA TRANSFER İŞLEMİ YAPMAK İSTER MİSİN?</strong></p>
+            </div>
+            <div class="text-center mt-3">
+                <button type="button" class="btn btn-success btn-lg w-100 mb-2" onclick="transferiYap(${altDepo.id}, ${mevcutAltDepoId})">
+                    <i class="fas fa-exchange-alt"></i> TRANSFERİ YAP
+                </button>
+                <button type="button" class="btn btn-secondary w-100 btn-lg" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> HAYIR
+                </button>
+            </div>
+        `;
+        
+        $('#tespitIcerik').html(tespitHtml);
+        $('#altDepoTespitModal').modal('show');
+    }
+
+    // Transfer sayfasını aç
+    function transferiYap(kaynakAltDepoId, hedefAltDepoId) {
+        $('#altDepoTespitModal').modal('hide');
+        window.location.href = '@Url.Action("TespitTransfer", "StokHarekets")?kaynakAltDepoId=' + kaynakAltDepoId + '&hedefAltDepoId=' + hedefAltDepoId;
+    }
+
+    // Uyarıyı kapat
+    function dismissAlert() {
+        $('.alert').fadeOut();
+    }
+
+    // Transfer sayfasını aç
+    function transferYap(altDepoId) {
+        window.location.href = '@Url.Action("Transfer", "StokHarekets")?hedefAltDepoId=' + altDepoId;
+    }
+
+    // Uyarıları yükle
+    // Uyarı işlemleri
+    function markAsRead(uyariId) {
+        $.ajax({
+            url: '@Url.Action("MarkUyariAsRead", "Home")',
+            type: 'POST',
+            data: { uyariId: uyariId },
+            success: function(response) {
+                if (response.success) {
+                    $('[data-uyari-id="' + uyariId + '"]').addClass('okundu');
+                    // Sayfayı yenile
+                    location.reload();
+                }
+            },
+            error: function() {
+                alert('Uyarı işaretlenirken hata oluştu!');
+            }
+        });
+    }
+
+    function markAllAsRead() {
+        $.ajax({
+            url: '@Url.Action("MarkAllUyarilarAsRead", "Home")',
+            type: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    // Sayfayı yenile
+                    location.reload();
+                }
+            },
+            error: function() {
+                alert('Uyarılar işaretlenirken hata oluştu!');
+            }
+        });
+    }
+
+    function yukleUyarilar() {
+        // Hem minimum stok uyarıları hem de tespit transfer uyarıları
+        Promise.all([
+            // Minimum stok uyarıları
+            $.ajax({
+                url: '@Url.Action("GetMinimumStokUyarilari", "StokHarekets")',
+                type: 'GET'
+            }),
+            // Tespit transfer uyarıları (UyariService'den)
+            $.ajax({
+                url: '@Url.Action("GetUyarilarAsync", "Home")',
+                type: 'GET'
+            })
+        ]).then(function(responses) {
+            var minimumStokResponse = responses[0];
+            var uyariServiceResponse = responses[1];
+            
+            var tumUyarilar = [];
+            
+            // Minimum stok uyarıları
+            if (minimumStokResponse && minimumStokResponse.success && minimumStokResponse.uyarilar) {
+                minimumStokResponse.uyarilar.forEach(function(uyari) {
+                    uyari.tip = 'minimum-stok';
+                    tumUyarilar.push(uyari);
+                });
+            }
+            
+            // UyariService'den gelen tespit transfer uyarıları
+            if (uyariServiceResponse && uyariServiceResponse.success && uyariServiceResponse.uyarilar) {
+                console.log('🎯 UyariService response:', uyariServiceResponse.uyarilar.length, 'uyarı');
+                uyariServiceResponse.uyarilar.forEach(function(uyari) {
+                    uyari.tip = 'tespit-transfer';
+                    tumUyarilar.push(uyari);
+                    console.log('➕ Tespit transfer uyarısı eklendi:', uyari.Baslik);
+                });
+            } else {
+                console.log('❌ UyariService response boş veya hatalı:', uyariServiceResponse);
+            }
+            
+            if (tumUyarilar.length > 0) {
+                gosterUyarilar(tumUyarilar);
+            } else {
+                gosterBosUyari();
+            }
+        }).catch(function(error) {
+            console.error('Uyarılar yüklenirken hata:', error);
+            gosterBosUyari();
+        });
+    }
+
+    // Uyarıları göster
+    function gosterUyarilar(uyarilar) {
+        var uyariHtml = '';
+        
+        // Uyarı sayısını güncelle ve göster
+        $('#uyariSayisi').text(uyarilar.length).show();
+        
+        // Tümünü okundu butonunu göster
+        if (uyarilar.length > 0) {
+            $('#tumunuOkunduBtn').show();
+        }
+        
+        uyarilar.forEach(function(uyari) {
+            if (uyari.tip === 'minimum-stok') {
+                // Minimum stok uyarısı
+                uyariHtml += `
+                    <div class="alert alert-warning fade show" role="alert">
+                        <strong>⚠️ Minimum Stok Uyarısı!</strong>
+                        <p class="mb-2"><strong>${uyari.altDepoAdi}</strong> alt deposunda <strong>${uyari.stokAd}</strong> ürününün stok miktarı azalıyor.</p>
+                        <p class="mb-2"><strong>Mevcut Miktar:</strong> ${uyari.durumMiktar} <strong>Minimum:</strong> ${uyari.minimumMiktar}</p>
+                        <p class="mb-3"><strong>İSTERSEN BAŞKA BİR DEPODAN TRANSFER GİRİŞİ ALMAK İÇİN ALT DEPO TESPİTİ YAPABİLİRİM</strong></p>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(${uyari.altDepoId})">
+                                🎯 Alt Depo Tespit Et
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="iptalEtUyari(this)">
+                                ❌ İptal Et
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (uyari.tip === 'tespit-transfer') {
+                // UyariService'den gelen kalıcı minimum stok uyarısı - YUKARIYA DÜŞEN BİLDİRİMİN AYNISI
+                if (uyari.Baslik && uyari.Baslik.includes('Minimum Stok Uyarısı')) {
+                    // AYNI BİLDİRİM - Minimum stok uyarısı
+                    var altDepoId = uyari.Mesaj.includes('ALTDEPO_ID:') ? uyari.Mesaj.split('ALTDEPO_ID:')[1] : '0';
+                    var temizMesaj = uyari.Mesaj.replace(/ ALTDEPO_ID:\d+/, ''); // ID'yi mesajdan temizle
+                    
+                    uyariHtml += `
+                        <div class="alert alert-warning fade show" role="alert" data-uyari-id="${uyari.Id}" data-alt-depo-id="${altDepoId}">
+                            <strong>${uyari.Baslik}</strong>
+                            <p class="mb-2">${temizMesaj}</p>
+                            <p class="mb-3"><strong>İSTERSEN BAŞKA BİR DEPODAN TRANSFER GİRİŞİ ALMAK İÇİN ALT DEPO TESPİTİ YAPABİLİRİM</strong></p>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="tespitEtAltDepo(${altDepoId})">
+                                    🎯 Alt Depo Tespit Et
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="silUyari(${uyari.Id})">
+                                    🗑️ Sil
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Diğer tespit transfer uyarıları
+                    uyariHtml += `
+                        <div class="alert alert-info fade show" role="alert" data-uyari-id="${uyari.Id}">
+                            <strong>${uyari.Baslik}</strong>
+                            <p class="mb-2">${uyari.Mesaj}</p>
+                            <p class="mb-2"><small class="text-muted">${new Date(uyari.OlusturmaTarihi).toLocaleString('tr-TR')}</small></p>
+                            <div class="d-flex gap-2">
+                                <a href="${uyari.AksiyonUrl}" class="btn btn-success btn-sm">
+                                    ${uyari.AksiyonText}
+                                </a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="silUyari(${uyari.Id})">
+                                    🗑️ Sil
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        });
+        
+        $('#uyariListesi').html(uyariHtml);
+    }
+
+    // Boş uyarı göster
+    function gosterBosUyari() {
+        // Uyarı sayısını sıfırla ve gizle
+        $('#uyariSayisi').text('0').hide();
+        
+        // Tümünü okundu butonunu gizle
+        $('#tumunuOkunduBtn').hide();
+        
+        var bosHtml = `
+            <div class="uyari-bos">
+                <i class="fas fa-check-circle text-success"></i>
+                <p>Tüm stoklar yeterli seviyede!</p>
+                <p class="text-muted">Herhangi bir uyarı bulunmuyor.</p>
+            </div>
+        `;
+        $('#uyariListesi').html(bosHtml);
+    }
+
+    // Uyarıyı iptal et
+    function iptalEtUyari(button) {
+        $(button).closest('.alert').fadeOut(300, function() {
+            $(this).remove();
+            // Uyarı sayısını güncelle
+            var kalanUyariSayisi = $('#uyariListesi .alert').length;
+            $('#uyariSayisi').text(kalanUyariSayisi);
+            
+            // Eğer hiç uyarı kalmadıysa boş mesaj göster
+            if (kalanUyariSayisi <= 0) {
+                gosterBosUyari();
+            }
+        });
+    }
+    
+    // Uyarıyı sil
+    function silUyari(uyariId) {
+        if (confirm('Bu uyarıyı silmek istediğinizden emin misiniz?')) {
+            $.ajax({
+                url: '@Url.Action("SilUyari", "Home")',
+                type: 'POST',
+                data: { uyariId: uyariId },
+                success: function(response) {
+                    if (response.success) {
+                        // Uyarıyı DOM'dan kaldır
+                        $(`[data-uyari-id="${uyariId}"]`).remove();
+                        
+                        // Uyarı sayısını güncelle
+                        var kalanUyariSayisi = $('#uyariListesi .alert').length;
+                        $('#uyariSayisi').text(kalanUyariSayisi);
+                        
+                        // Eğer hiç uyarı kalmadıysa boş mesaj göster
+                        if (kalanUyariSayisi <= 0) {
+                            gosterBosUyari();
+                        }
+                        
+                        console.log('Uyarı başarıyla silindi');
+                    } else {
+                        alert('Uyarı silinirken hata oluştu: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Uyarı silinirken hata oluştu!');
+                }
+            });
+        }
+    }
+    
+    // Transfer onaylama
+    function onaylaTransfer(transferId) {
+        if (confirm('Transfer işlemini onaylamak istediğinizden emin misiniz?')) {
+            $.ajax({
+                url: '@Url.Action("OnaylaTransfer", "StokHarekets")',
+                type: 'POST',
+                data: { transferId: transferId },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Transfer işlemi başarıyla onaylandı!');
+                        // Uyarıları yenile
+                        yukleUyarilar();
+                    } else {
+                        alert('Transfer onaylanırken hata oluştu: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Transfer onaylanırken hata oluştu!');
+                }
+            });
+        }
+    }
+    
+    // Transfer reddetme
+    function reddetTransfer(transferId) {
+        if (confirm('Transfer işlemini reddetmek istediğinizden emin misiniz?')) {
+            $.ajax({
+                url: '@Url.Action("ReddetTransfer", "StokHarekets")',
+                type: 'POST',
+                data: { transferId: transferId },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Transfer işlemi reddedildi!');
+                        // Uyarıları yenile
+                        yukleUyarilar();
+                    } else {
+                        alert('Transfer reddedilirken hata oluştu: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('Transfer reddedilirken hata oluştu!');
+                }
+            });
+        }
+    }
+    
+    // Transfer düzenleme
+    function duzenleTransfer(transferId) {
+        window.location.href = '@Url.Action("DuzenleTransfer", "StokHarekets")?transferId=' + transferId;
+    }
+    
+    // Gereksiz fonksiyonlar kaldırıldı - artık direkt tespitEtAltDepo ve transferYap kullanılıyor
+</script>
+
+<style>
+    .uyari-listesi {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .uyari-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .uyari-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-1px);
+    }
+
+    .uyari-item.okundu {
+        opacity: 0.6;
+        background: #f8f9fa;
+    }
+
+    .uyari-icon {
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        margin-top: 0.25rem;
+    }
+
+    .uyari-content {
+        flex: 1;
+        margin-right: 1rem;
+    }
+
+    .uyari-baslik {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+    }
+
+    .uyari-mesaj {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .uyari-tarih {
+        font-size: 0.875rem;
+        color: #adb5bd;
+    }
+
+    .uyari-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .uyari-bos {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+    }
+
+    .uyari-bos i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+</style>

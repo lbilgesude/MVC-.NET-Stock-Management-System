@@ -1,0 +1,41 @@
+﻿@model StokTakip.Models.KullaniciTip
+
+@{
+    ViewData["Title"] = "Kullanıcı Tipi Sil";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Kullanıcı Tipi Silme Onayı</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger" role="alert">
+                    <h5 class="alert-heading">⚠️ DİKKAT: Bu işlem çok kapsamlıdır!</h5>
+                    <p><strong>@Model.KultipAdi</strong> adlı kullanıcı tipini silmek istediğinizden emin misiniz?</p>
+                    <hr>
+                    <p class="mb-0 text-danger"><strong>Bu işlem şunları da silecektir:</strong></p>
+                    <ul class="mb-0 mt-2">
+                        <li>Bu kullanıcı tipini kullanan <strong>TÜM KULLANICILAR</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM STOKLAR</strong></li>
+                        <li>Bu kullanıcıların yaptığı <strong>TÜM STOK HAREKETLERİ</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM STOK DURUMLARI</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM ALT DEPOLAR VE DEPOLAR</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM HAREKET TİPLERİ</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM ÖLÇÜ BİRİMLERİ</strong></li>
+                        <li>Bu kullanıcıların oluşturduğu <strong>TÜM SORUMLULAR</strong></li>
+                    </ul>
+                    <p class="mt-2 mb-0 text-danger"><strong>Bu işlem geri alınamaz ve tüm ilgili veriler veritabanından tamamen silinecektir.</strong></p>
+                </div>
+            </div>
+            <div class="card-footer text-end">
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Evet, Tümünü Kalıcı Olarak Sil" class="btn btn-danger" />
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

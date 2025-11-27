@@ -1,0 +1,245 @@
+﻿@model IEnumerable<StokTakip.Models.StokHareket>
+
+@{
+    ViewData["Title"] = "Kullanıcı Hareketleri";
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>
+                            Tüm Kullanıcı Hareketleri
+                        </h3>
+                        <a href="@Url.Action("Index", "Kullanicis")" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Kullanıcılara Dön
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="ps-3">
+                                            <i class="fas fa-calendar me-2"></i>
+                                            Tarih
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-user me-2"></i>
+                                            Yapan Kullanıcı
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-box me-2"></i>
+                                            Ürün
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-exchange-alt me-2"></i>
+                                            Hareket Tipi
+                                        </th>
+                                        <th class="text-end pe-3">
+                                            <i class="fas fa-balance-scale me-2"></i>
+                                            Miktar
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="ps-3">
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-calendar-alt me-1"></i>
+                                                    @item.HareketTarihi.ToString("dd.MM.yyyy HH:mm")
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (item.OlusturanKullaniciNavigation != null)
+                                                {
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                            <i class="fas fa-user"></i>
+                                                        </div>
+                                                        <span class="fw-bold">
+                                                            @item.OlusturanKullaniciNavigation.KulAd @item.OlusturanKullaniciNavigation.KulSoyad
+                                                        </span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-danger">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                                        Bilinmeyen Kullanıcı
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.Stok?.StokAd))
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-box me-1"></i>
+                                                        @item.Stok.StokAd
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Belirtilmemiş</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (item.HareketTipNavigation != null)
+                                                {
+                                                    @if (item.HareketTip == 1)
+                                                    {
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-arrow-down me-1"></i>
+                                                            @item.HareketTipNavigation.HareketTipAdi
+                                                        </span>
+                                                    }
+                                                    else if (item.HareketTip == 2)
+                                                    {
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-exchange-alt me-1"></i>
+                                                            @item.HareketTipNavigation.HareketTipAdi
+                                                        </span>
+                                                    }
+                                                    else if (item.HareketTip == 3)
+                                                    {
+                                                        <span class="badge bg-danger">
+                                                            <i class="fas fa-arrow-up me-1"></i>
+                                                            @item.HareketTipNavigation.HareketTipAdi
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">
+                                                            <i class="fas fa-question me-1"></i>
+                                                            @item.HareketTipNavigation.HareketTipAdi
+                                                        </span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                                        Tip @item.HareketTip
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <span class="badge bg-warning text-dark fs-6">
+                                                    <i class="fas fa-balance-scale me-1"></i>
+                                                    @item.HareketMiktar
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Özet Bilgiler -->
+                        <div class="card-footer bg-light">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="summary-item">
+                                        <i class="fas fa-history text-primary fs-4"></i>
+                                        <div class="summary-label">Toplam Hareket</div>
+                                        <div class="summary-value fw-bold">@Model.Count()</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-item">
+                                        <i class="fas fa-arrow-down text-success fs-4"></i>
+                                        <div class="summary-label">Giriş Hareketleri</div>
+                                        <div class="summary-value fw-bold">@Model.Count(x => x.HareketTip == 1)</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-item">
+                                        <i class="fas fa-exchange-alt text-info fs-4"></i>
+                                        <div class="summary-label">Transfer Hareketleri</div>
+                                        <div class="summary-value fw-bold">@Model.Count(x => x.HareketTip == 2)</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-item">
+                                        <i class="fas fa-arrow-up text-danger fs-4"></i>
+                                        <div class="summary-label">Çıkış Hareketleri</div>
+                                        <div class="summary-value fw-bold">@Model.Count(x => x.HareketTip == 3)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-history text-muted" style="font-size: 4rem;"></i>
+                                </div>
+                                <h3 class="empty-state-title">Henüz Hareket Yok</h3>
+                                <p class="empty-state-message">Sistemde henüz hiç stok hareketi bulunmamaktadır.</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .summary-item {
+        padding: 1rem;
+        border-radius: 8px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin: 0.5rem 0;
+    }
+    
+    .summary-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+    }
+    
+    .summary-value {
+        font-size: 1.5rem;
+        color: #495057;
+        margin-top: 0.25rem;
+    }
+    
+    .empty-state {
+        padding: 2rem;
+    }
+    
+    .empty-state-icon {
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-title {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-state-message {
+        color: #adb5bd;
+        margin-bottom: 0;
+    }
+</style>

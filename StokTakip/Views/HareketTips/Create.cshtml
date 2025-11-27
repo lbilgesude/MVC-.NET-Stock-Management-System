@@ -1,0 +1,52 @@
+﻿@model StokTakip.Models.HareketTip
+@{
+    ViewData["Title"] = "Yeni Hareket Tipi Ekle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">@ViewData["Title"]</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="HareketTipAdi" class="control-label"></label>
+                        <input asp-for="HareketTipAdi" class="form-control" />
+                        <span asp-validation-for="HareketTipAdi" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="control-label">İşlem Etkisi</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="IslemGostergesi" value="true" id="arttirir" checked>
+                            <label class="form-check-label" for="arttirir">
+                                Bu işlem stok miktarını arttırır (Giriş, Transfer Alım vb.)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" asp-for="IslemGostergesi" value="false" id="azaltir">
+                            <label class="form-check-label" for="azaltir">
+                                Bu işlem stok miktarını azaltır (Çıkış, Transfer Gönderim vb.)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" value="Kaydet" class="btn btn-primary" />
+                        <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

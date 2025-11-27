@@ -1,0 +1,185 @@
+﻿@model StokTakip.Models.Stok
+
+@{
+    ViewData["Title"] = "Stok Sil";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Stok Silme Onayı
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ⚠️ SİLME ONAYI GEREKLİ
+                        </h4>
+                        <p class="mb-2 fs-5">
+                            <strong>Bu stok kaydını silmek istediğinizden emin misiniz?</strong>
+                        </p>
+                        <p class="mb-0 text-danger fw-bold">
+                            <i class="fas fa-skull-crossbones me-2"></i>
+                            Bu işlem geri alınamaz ve tüm stok hareketleri de silinecektir!
+                        </p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Sol Kolon - Temel Bilgiler -->
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-box me-2"></i>Silinecek Stok Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Stok Adı:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info fs-6">@Model.StokAd</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Marka:</div>
+                                        <div class="col-sm-8">
+                                            @if (!string.IsNullOrEmpty(Model.StokMarka))
+                                            {
+                                                <span class="badge bg-secondary fs-6">@Model.StokMarka</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Belirtilmemiş</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Ölçü Birimi:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-primary fs-6">
+                                                @(Model.StokOlcuBirimNavigation?.OlcuBirimAdi ?? "Belirtilmemiş")
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Durum:</div>
+                                        <div class="col-sm-8">
+                                            @if (Model.Statu)
+                                            {
+                                                <span class="badge bg-success fs-6">
+                                                    <i class="fas fa-check me-1"></i>Aktif
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger fs-6">
+                                                    <i class="fas fa-times me-1"></i>Pasif
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Kolon - Sistem Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Sistem Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Kayıt Miktarı:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-warning text-dark fs-5">@Model.KayitMiktar</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Kayıt Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-calendar-alt me-2"></i>
+                                            @Model.KayitTarihi.ToString("dd.MM.yyyy HH:mm")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Oluşturma Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-plus-circle me-2"></i>
+                                            @(Model.OlusturmaTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Belirtilmemiş")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Güncelleme Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-edit me-2"></i>
+                                            @(Model.GuncellemeTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Güncellenmemiş")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detay Bilgisi -->
+                    @if (!string.IsNullOrEmpty(Model.StokDetay))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-secondary">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0"><i class="fas fa-comment me-2"></i>Detay</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="mb-0">@Model.StokDetay</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>İptal
+                            </a>
+                        </div>
+                        <div>
+                            <form asp-action="DeleteConfirmed" method="post" class="d-inline">
+                                <input type="hidden" asp-for="Id" />
+                                <button type="submit" class="btn btn-danger btn-lg px-4 py-3">
+                                    <i class="fas fa-trash me-2"></i>
+                                    <strong>EVET, EMİNİM - SİL</strong>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Sayfa yüklendiğinde animasyonlar
+            $('.card').hide().fadeIn(500);
+            $('.alert').hide().fadeIn(800);
+            
+            // Silme butonuna hover efekti
+            $('.btn-danger').hover(
+                function() {
+                    $(this).addClass('btn-outline-danger').removeClass('btn-danger');
+                },
+                function() {
+                    $(this).addClass('btn-danger').removeClass('btn-outline-danger');
+                }
+            );
+        });
+    </script>
+}

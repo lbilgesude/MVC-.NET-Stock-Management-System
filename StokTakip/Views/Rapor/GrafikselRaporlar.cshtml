@@ -1,0 +1,928 @@
+﻿@model StokTakip.Models.GrafikselRaporlarViewModel
+@{
+    ViewData["Title"] = "Stok Grafikleri ve Analizler";
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<!-- Chart.js CDN -->
+
+<!-- Sayfa Başlığı -->
+<div class="page-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="page-title">
+                    <i class="fas fa-chart-line me-3"></i>
+                    @ViewData["Title"]
+                </h1>
+                <p class="page-subtitle">Stok hareketlerinizi analiz edin ve görsel raporlar oluşturun</p>
+            </div>
+            <div class="col-auto">
+                <a asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Raporlara Geri Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Özet Kartları -->
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Toplam Hareket</h6>
+                        <i class="fas fa-chart-line fa-lg"></i>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="text-primary mb-0">@(Model.AylikCikislar.Sum(x => x.Value) + Model.AylikGirisler.Sum(x => x.Value))</h2>
+                    <small class="text-muted">Toplam Stok Hareketi</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-arrow-down me-2"></i>Toplam Giriş</h6>
+                        <i class="fas fa-plus-circle fa-lg"></i>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="text-success mb-0">@Model.AylikGirisler.Sum(x => x.Value)</h2>
+                    <small class="text-muted">Stok Giriş Miktarı</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-arrow-up me-2"></i>Toplam Çıkış</h6>
+                        <i class="fas fa-minus-circle fa-lg"></i>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="text-warning mb-0">@Model.AylikCikislar.Sum(x => x.Value)</h2>
+                    <small class="text-muted">Stok Çıkış Miktarı</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="fas fa-random me-2"></i>Toplam Transfer</h6>
+                        <i class="fas fa-exchange-alt fa-lg"></i>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <h2 class="text-info mb-0">@Model.AylikTransferler.Sum(x => x.Value)</h2>
+                    <small class="text-muted">Transfer Miktarı</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ana Grafikler - Stok Akış Analizi -->
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Aylık Stok Akış Analizi
+                    </h5>
+                    <p class="text-muted mb-0">Giriş, Çıkış ve Transfer miktarlarının aylık karşılaştırması</p>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 400px;">
+                        <canvas id="aylikStokAkisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Hareket Tipi Dağılımı
+                    </h5>
+                    <p class="text-muted mb-0">Stok hareketlerinin türlerine göre dağılımı</p>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 400px;">
+                        <canvas id="hareketTipiChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- JavaScript Kodları -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+    // Model verisi
+    const modelData = @Html.Raw(Json.Serialize(Model));
+    
+    console.log("Model verisi yüklendi:", modelData);
+    
+    // Model verisi kontrolü
+    //if (!modelData) {
+    //    console.error("Model verisi yüklenemedi!");
+    //    return;
+    //}
+    
+    // Veri varlığını kontrol et
+    console.log("Aylık Çıkışlar:", modelData.AylikCikislar);
+    console.log("Aylık Girişler:", modelData.AylikGirisler);
+    console.log("Hareket Tipi Dağılımı:", modelData.HareketTipiDagilimi);
+
+    // Chart.js yükleme kontrolü
+    function waitForChart() {
+        if (typeof Chart !== 'undefined') {
+            console.log("Chart.js başarıyla yüklendi");
+            console.log("Chart.js versiyonu:", Chart.version);
+            createAllCharts();
+        } else {
+            console.log("Chart.js yükleniyor...");
+            setTimeout(waitForChart, 100);
+        }
+    }
+    
+    // Test grafiği oluştur
+    function createTestChart() {
+        const testCtx = document.getElementById('aylikStokAkisChart');
+        if (testCtx && typeof Chart !== 'undefined') {
+            console.log("Test grafiği oluşturuluyor...");
+            try {
+                new Chart(testCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Test'],
+                        datasets: [{
+                            label: 'Test Veri',
+                            data: [10],
+                            backgroundColor: 'rgba(255, 99, 132, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                console.log("Test grafiği başarıyla oluşturuldu!");
+            } catch (e) {
+                console.error("Test grafiği oluşturulamadı:", e);
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("DOM yüklendi");
+        
+        // Chart.js yükleme kontrolü
+        waitForChart();
+    });
+
+    function createAllCharts() {
+        try {
+            console.log("Grafikler oluşturuluyor...");
+            
+            // Basit grafikler oluştur
+            createSimpleChart('aylikStokAkisChart', 'line', 'Aylık Stok Akışı');
+            createSimpleChart('hareketTipiChart', 'doughnut', 'Hareket Tipi Dağılımı');
+            createSimpleChart('depoStokChart', 'bar', 'Depo Stok Durumu');
+            createSimpleChart('altDepoStokChart', 'bar', 'Alt Depo Stok Dağılımı');
+            createSimpleChart('gunlukTrendChart', 'line', 'Günlük Hareket Trendi');
+            createSimpleChart('kritikStokChart', 'bar', 'Kritik Stok Seviyeleri');
+            createSimpleChart('aktifKullanicilarChart', 'doughnut', 'En Aktif Kullanıcılar');
+            createSimpleChart('enCokCikanUrunlerChart', 'bar', 'En Çok Çıkan Ürünler');
+            
+            console.log("Tüm grafikler oluşturuldu!");
+        } catch (error) {
+            console.error("Grafik oluşturma hatası:", error);
+            // Hata durumunda basit grafikler oluştur
+            createFallbackCharts();
+        }
+    }
+    
+    function createSimpleChart(canvasId, chartType, title) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) {
+            console.error(`${canvasId} canvas bulunamadı`);
+            return;
+        }
+
+        try {
+            console.log(`${canvasId} grafiği oluşturuluyor...`);
+            
+            const labels = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran'];
+            const data = [10, 15, 8, 12, 20, 18];
+            
+            new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: title,
+                        data: data,
+                        backgroundColor: chartType === 'doughnut' ? 
+                            ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'] :
+                            'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: title
+                        },
+                        legend: {
+                            display: chartType === 'doughnut'
+                        }
+                    },
+                    scales: chartType !== 'doughnut' ? {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    } : {}
+                }
+            });
+            console.log(`${canvasId} grafiği oluşturuldu`);
+        } catch (error) {
+            console.error(`${canvasId} grafiği hatası:`, error);
+        }
+    }
+    
+    function createFallbackCharts() {
+        console.log("Fallback grafikler oluşturuluyor...");
+        
+        // Basit örnek grafikler oluştur
+        const charts = [
+            'aylikStokAkisChart',
+            'hareketTipiChart', 
+            'depoStokChart',
+            'altDepoStokChart',
+            'gunlukTrendChart',
+            'kritikStokChart',
+            'aktifKullanicilarChart',
+            'enCokCikanUrunlerChart'
+        ];
+        
+        charts.forEach(chartId => {
+            const ctx = document.getElementById(chartId);
+            if (ctx) {
+                try {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Örnek Veri'],
+                            datasets: [{
+                                label: 'Test',
+                                data: [10],
+                                backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                    console.log(`${chartId} fallback grafiği oluşturuldu`);
+                } catch (e) {
+                    console.error(`${chartId} fallback grafiği oluşturulamadı:`, e);
+                }
+            }
+        });
+    }
+
+    function createAylikStokAkisChart() {
+        const ctx = document.getElementById('aylikStokAkisChart');
+        if (!ctx) {
+            console.error('aylikStokAkisChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            // Model verisinden gerçek verileri al
+            const labels = modelData.AylikCikislar ? modelData.AylikCikislar.map(x => x.Label) : [];
+            const cikisData = modelData.AylikCikislar ? modelData.AylikCikislar.map(x => parseFloat(x.Value)) : [];
+            const girisData = modelData.AylikGirisler ? modelData.AylikGirisler.map(x => parseFloat(x.Value)) : [];
+            const transferData = modelData.AylikTransferler ? modelData.AylikTransferler.map(x => parseFloat(x.Value)) : [];
+
+            console.log('Aylık veriler:', { labels, cikisData, girisData, transferData });
+
+            // Eğer hiç veri yoksa örnek veri oluştur
+            if (labels.length === 0) {
+                console.log('Veri yok, örnek veri oluşturuluyor...');
+                const sampleLabels = ['2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06'];
+                const sampleCikis = [10, 15, 8, 12, 20, 18];
+                const sampleGiris = [25, 30, 22, 28, 35, 32];
+                const sampleTransfer = [5, 8, 6, 9, 12, 10];
+                
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: sampleLabels,
+                        datasets: [
+                            {
+                                label: 'Giriş',
+                                data: sampleGiris,
+                                borderColor: 'rgb(40, 167, 69)',
+                                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Çıkış',
+                                data: sampleCikis,
+                                borderColor: 'rgb(255, 193, 7)',
+                                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Transfer',
+                                data: sampleTransfer,
+                                borderColor: 'rgb(23, 162, 184)',
+                                backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Aylık Stok Akış Analizi (Örnek Veri)'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0,0,0,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Grafik oluştur
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Veri Yok'],
+                    datasets: [
+                        {
+                            label: 'Giriş',
+                            data: girisData.length > 0 ? girisData : [0],
+                            borderColor: 'rgb(40, 167, 69)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Çıkış',
+                            data: cikisData.length > 0 ? cikisData : [0],
+                            borderColor: 'rgb(255, 193, 7)',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Transfer',
+                            data: transferData.length > 0 ? transferData : [0],
+                            borderColor: 'rgb(23, 162, 184)',
+                            backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Aylık Stok Akış Analizi'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Aylık Stok Akış grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Aylık Stok Akış grafiği hatası:', error);
+        }
+    }
+
+    function createHareketTipiChart() {
+        const ctx = document.getElementById('hareketTipiChart');
+        if (!ctx) {
+            console.error('hareketTipiChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.HareketTipiDagilimi;
+            console.log('Hareket tipi verileri:', data);
+            
+            // Eğer veri yoksa örnek veri oluştur
+            if (!data || data.length === 0) {
+                console.log('Hareket tipi verisi yok, örnek veri oluşturuluyor...');
+                const sampleData = [
+                    { Label: 'Giriş', Value: 45 },
+                    { Label: 'Çıkış', Value: 30 },
+                    { Label: 'Transfer', Value: 15 },
+                    { Label: 'Düzeltme', Value: 10 }
+                ];
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sampleData.map(d => d.Label),
+                        datasets: [{
+                            data: sampleData.map(d => d.Value),
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Hareket Tipi Dağılımı (Örnek Veri)'
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(d => d.Label),
+                    datasets: [{
+                        data: data.map(d => parseFloat(d.Value)),
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Hareket Tipi Dağılımı'
+                        }
+                    }
+                }
+            });
+            console.log('Hareket Tipi grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Hareket Tipi grafiği hatası:', error);
+        }
+    }
+
+    function createDepoStokChart() {
+        const ctx = document.getElementById('depoStokChart');
+        if (!ctx) {
+            console.error('depoStokChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.DepoBazliStokDurumu;
+            console.log('Depo stok verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        label: 'Stok Miktarı',
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [0],
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Depo Bazlı Stok Durumu'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Depo Stok grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Depo Stok grafiği hatası:', error);
+        }
+    }
+
+    function createAltDepoStokChart() {
+        const ctx = document.getElementById('altDepoStokChart');
+        if (!ctx) {
+            console.error('altDepoStokChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.AltDepoStokDagilimi;
+            console.log('Alt depo stok verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        label: 'Stok Miktarı',
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [0],
+                        backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Alt Depo Stok Dağılımı'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Alt Depo Stok grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Alt Depo Stok grafiği hatası:', error);
+        }
+    }
+
+    function createGunlukTrendChart() {
+        const ctx = document.getElementById('gunlukTrendChart');
+        if (!ctx) {
+            console.error('gunlukTrendChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.GunlukHareketTrendi;
+            console.log('Günlük trend verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        label: 'Hareket Sayısı',
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [0],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Günlük Hareket Trendi'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Günlük Trend grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Günlük Trend grafiği hatası:', error);
+        }
+    }
+
+    function createKritikStokChart() {
+        const ctx = document.getElementById('kritikStokChart');
+        if (!ctx) {
+            console.error('kritikStokChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.KritikStokSeviyeleri;
+            console.log('Kritik stok verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        label: 'Mevcut Miktar',
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [0],
+                        backgroundColor: 'rgba(255, 159, 64, 0.8)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Kritik Stok Seviyeleri'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Kritik Stok grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Kritik Stok grafiği hatası:', error);
+        }
+    }
+
+    function createAktifKullanicilarChart() {
+        const ctx = document.getElementById('aktifKullanicilarChart');
+        if (!ctx) {
+            console.error('aktifKullanicilarChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.EnAktifKullanicilar;
+            console.log('Aktif kullanıcı verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [1],
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'En Aktif Kullanıcılar'
+                        }
+                    }
+                }
+            });
+            console.log('Aktif Kullanıcılar grafiği oluşturuldu');
+        } catch (error) {
+            console.error('Aktif Kullanıcılar grafiği hatası:', error);
+        }
+    }
+
+    function createEnCokCikanUrunlerChart() {
+        const ctx = document.getElementById('enCokCikanUrunlerChart');
+        if (!ctx) {
+            console.error('enCokCikanUrunlerChart canvas bulunamadı');
+            return;
+        }
+
+        try {
+            const data = modelData.EnCokCikisiYapilanUrunler;
+            console.log('En çok çıkan ürün verileri:', data);
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data && data.length > 0 ? data.map(d => d.Label) : ['Veri Yok'],
+                    datasets: [{
+                        label: 'Çıkış Miktarı',
+                        data: data && data.length > 0 ? data.map(d => parseFloat(d.Value)) : [0],
+                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'En Çok Çıkışı Yapılan Ürünler'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('En Çok Çıkan Ürünler grafiği oluşturuldu');
+        } catch (error) {
+            console.error('En Çok Çıkan Ürünler grafiği hatası:', error);
+        }
+    }
+
+    // Chart.js yüklendikten sonra grafikleri oluştur
+    function waitForChart() {
+        if (typeof Chart !== 'undefined') {
+            console.log('Chart.js yüklendi, grafikler oluşturuluyor...');
+            
+            // Tüm grafikleri oluştur
+            createAylikStokAkisChart();
+            createHareketTipiChart();
+            createDepoStokChart();
+            createAltDepoStokChart();
+            createGunlukTrendChart();
+            createKritikStokChart();
+            createAktifKullanicilarChart();
+            createEnCokCikanUrunlerChart();
+        } else {
+            console.log('Chart.js henüz yüklenmedi, 100ms sonra tekrar denenecek...');
+            setTimeout(waitForChart, 100);
+        }
+    }
+
+    // Sayfa yüklendiğinde grafikleri oluştur
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Sayfa yüklendi, Chart.js bekleniyor...');
+        waitForChart();
+    });
+</script>

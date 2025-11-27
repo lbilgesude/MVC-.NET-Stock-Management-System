@@ -1,0 +1,448 @@
+﻿@model IEnumerable<StokTakip.Models.HareketTip>
+
+@{
+    ViewData["Title"] = "Hareket Tipleri";
+    string currentFilter = ViewData["CurrentFilter"] as string;
+}
+
+@await Html.PartialAsync("_ModernLayout")
+
+<!-- Başarı ve Hata Mesajları -->
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i>
+        @ViewBag.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        @ViewBag.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Arama ve Filtre Bölümü -->
+<div class="search-section">
+    <form method="get" class="search-form">
+        <div class="search-row">
+            <div class="search-group">
+                <label class="search-label">Hareket Tipi Adı</label>
+                <input type="text" name="searchString" class="search-input" placeholder="Hareket tipine göre ara..." value="@currentFilter" />
+            </div>
+            <div class="search-buttons">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    Ara
+                </button>
+                @if (!string.IsNullOrEmpty(currentFilter))
+                {
+                    <a href="@Url.Action("Index")" class="btn btn-outline">
+                        <i class="fas fa-times"></i>
+                        Temizle
+                    </a>
+                }
+                @if (ViewData["ShowOnlyActive"] is bool showOnlyActive && showOnlyActive)
+                {
+                    <a href="@Url.Action("Index", new { searchString = currentFilter, showOnlyActive = false })" class="btn btn-info">
+                        <i class="fas fa-eye"></i>
+                        HEM AKTİFLERİ HEM PASİFLERİ GÖSTER
+                    </a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Index", new { searchString = currentFilter, showOnlyActive = true })" class="btn btn-warning">
+                        <i class="fas fa-eye-slash"></i>
+                        SADECE AKTİFLERİ GÖSTER
+                    </a>
+                }
+                <a href="@Url.Action("ExportToExcel", "HareketTips")" class="btn btn-success">
+                    <i class="fas fa-file-excel"></i>
+                    Excel'e Aktar
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Veri Tablosu -->
+<div class="data-table-container">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="min-width: 200px;">Hareket Tipi Bilgileri</th>
+                        <th style="min-width: 150px; text-align: center;">İşlem Yönü</th>
+                        <th style="min-width: 120px; text-align: center;">Durum</th>
+                        <th style="min-width: 150px; text-align: center;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="movement-info">
+                                    <div class="movement-name">
+                                        <i class="fas fa-tags text-primary"></i>
+                                        @Html.DisplayFor(modelItem => item.HareketTipAdi)
+                                    </div>
+                                    <div class="movement-code">ID: @item.Id</div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                @if (item.IslemGostergesi)
+                                {
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-arrow-up"></i>
+                                        Stok Artışı (+)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">
+                                        <i class="fas fa-arrow-down"></i>
+                                        Stok Azalışı (-)
+                                    </span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.Statu)
+                                {
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i>
+                                        Aktif
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">
+                                        <i class="fas fa-ban"></i>
+                                        Pasif
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Detaylar">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning" title="Düzenle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Özet Bilgiler -->
+        <div class="table-summary">
+            <div class="summary-item">
+                <i class="fas fa-list text-primary"></i>
+                <span class="summary-label">Toplam Hareket Tipi:</span>
+                <span class="summary-value">@Model.Count()</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-check-circle text-success"></i>
+                <span class="summary-label">Aktif Hareket Tipleri:</span>
+                <span class="summary-value">@Model.Count(x => x.Statu)</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-ban text-danger"></i>
+                <span class="summary-label">Pasif Hareket Tipleri:</span>
+                <span class="summary-value">@Model.Count(x => !x.Statu)</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-up text-info"></i>
+                <span class="summary-label">Stok Artışı:</span>
+                <span class="summary-value">@Model.Count(x => x.IslemGostergesi)</span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-arrow-down text-warning"></i>
+                <span class="summary-label">Stok Azalışı:</span>
+                <span class="summary-value">@Model.Count(x => !x.IslemGostergesi)</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-tags"></i>
+            </div>
+            <h3 class="empty-state-title">Hareket Tipi Bulunamadı</h3>
+            <p class="empty-state-message">Arama kriterlerinize uygun hareket tipi bulunamadı. Farklı arama terimleri deneyin veya yeni hareket tipi ekleyin.</p>
+        </div>
+    }
+</div>
+
+<style>
+/* Hareket Tipleri Özel Stilleri */
+.movement-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.movement-name {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.movement-code {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-family: 'Courier New', monospace;
+    background: #f3f4f6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+    width: fit-content;
+}
+
+/* Durum Badge'leri */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.badge-secondary {
+    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+    color: white;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+/* İşlem Butonları */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.action-buttons .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.action-buttons .btn-info {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.action-buttons .btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: white;
+}
+
+.action-buttons .btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+}
+
+/* Tablo Özeti */
+.table-summary {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 1.5rem;
+    border-radius: 0 0 15px 15px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 0;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #374151;
+    flex: 1;
+    min-width: 150px;
+    justify-content: center;
+}
+
+.summary-item i {
+    font-size: 1.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #1f2937;
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Tasarım */
+@@media (max-width: 1024px) {
+    .search-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-group {
+        min-width: auto;
+    }
+    
+    .search-buttons {
+        justify-content: stretch;
+    }
+    
+    .search-buttons .btn {
+        flex: 1;
+    }
+    
+    .table-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .summary-item {
+        width: 100%;
+        justify-content: center;
+        min-width: auto;
+    }
+}
+
+@@media (max-width: 768px) {
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 1rem 0.75rem;
+    }
+    
+    .movement-name {
+        font-size: 0.9rem;
+    }
+    
+    .action-buttons .btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        margin: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    .badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+}
+
+@@media (max-width: 480px) {
+    .search-section {
+        padding: 1rem;
+    }
+    
+    .data-table-container {
+        margin: 1rem 0;
+    }
+    
+    .data-table thead th,
+    .data-table tbody td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .movement-name {
+        font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+        height: 35px;
+        border-radius: 6px;
+    }
+}
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Silme işlemi için onay
+            $('form[asp-action="DeleteConfirmed"]').submit(function(e) {
+                if (!confirm('Bu hareket tipini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Alert'leri otomatik kapat
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+        });
+    </script>
+}

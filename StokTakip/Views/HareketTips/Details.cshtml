@@ -1,0 +1,174 @@
+﻿@model StokTakip.Models.HareketTip
+
+@{
+    ViewData["Title"] = "Hareket Tipi Detayları";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exchange-alt me-2"></i>
+                        Hareket Tipi Detayları
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Sol Kolon - Temel Bilgiler -->
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Temel Bilgiler</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Hareket Tipi:</div>
+                                        <div class="col-sm-8">
+                                            <span class="badge bg-info fs-6">@Model.HareketTipAdi</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">İşlem Yönü:</div>
+                                        <div class="col-sm-8">
+                                            @if (Model.IslemGostergesi)
+                                            {
+                                                <span class="badge bg-success fs-6">
+                                                    <i class="fas fa-plus me-1"></i>Stok Artışı (+)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger fs-6">
+                                                    <i class="fas fa-minus me-1"></i>Stok Azalışı (-)
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Durum:</div>
+                                        <div class="col-sm-8">
+                                            @if (Model.Statu)
+                                            {
+                                                <span class="badge bg-success fs-6">
+                                                    <i class="fas fa-check me-1"></i>Aktif
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary fs-6">
+                                                    <i class="fas fa-times me-1"></i>Pasif
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ Kolon - Sistem Bilgileri -->
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Sistem Bilgileri</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Oluşturma Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-plus-circle me-2"></i>
+                                            @(Model.OlusturmaTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Belirtilmemiş")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Güncelleme Tarihi:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-edit me-2"></i>
+                                            @(Model.GuncellemeTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Güncellenmemiş")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Oluşturan:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-user me-2"></i>
+                                            @(Model.OlusturanKullaniciNavigation != null ? $"{Model.OlusturanKullaniciNavigation.KulAd} {Model.OlusturanKullaniciNavigation.KulSoyad}" : "Belirtilmemiş")
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-sm-4 fw-bold">Güncelleyen:</div>
+                                        <div class="col-sm-8">
+                                            <i class="fas fa-user-edit me-2"></i>
+                                            @(Model.GuncelleyenKullaniciNavigation != null ? $"{Model.GuncelleyenKullaniciNavigation.KulAd} {Model.GuncelleyenKullaniciNavigation.KulSoyad}" : "Güncellenmemiş")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kullanım Bilgisi -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Kullanım Bilgisi</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <span class="badge bg-info fs-6">
+                                                <i class="fas fa-exchange-alt me-2"></i>
+                                                Bu hareket tipi stok giriş/çıkış işlemlerinde kullanılmaktadır
+                                            </span>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                @if (Model.IslemGostergesi)
+                                                {
+                                                    <span>Stok giriş işlemlerinde kullanılır</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Stok çıkış işlemlerinde kullanılır</span>
+                                                }
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Listeye Dön
+                            </a>
+                        </div>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model?.Id" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sayfa yüklendiğinde animasyonlar
+        $(document).ready(function() {
+            $('.card').hide().fadeIn(500);
+            $('.badge').hide().fadeIn(800);
+        });
+    </script>
+}
