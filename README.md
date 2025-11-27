@@ -2,6 +2,8 @@
 
 A comprehensive inventory management system built with ASP.NET Core MVC 8.0, designed to efficiently track stock movements, manage warehouses, and generate detailed reports.
 
+![Alt text](screenshot.png "Screenshot")
+
 ## 📋 Table of Contents
 
 - [Features](#features)
